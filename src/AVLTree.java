@@ -1,156 +1,168 @@
 /**
- *
  * AVLTree
- *
+ * <p>
  * An implementation of a AVL Tree with
  * distinct integer keys and info
- *
  */
 
 public class AVLTree {
+    private IAVLNode root;
+    private int size;
 
-  /**
-   * public boolean empty()
-   *
-   * returns true if and only if the tree is empty
-   *
-   */
-  public boolean empty() {
-    return false; // to be replaced by student code
-  }
+    /**
+     * public boolean empty()
+     * <p>
+     * returns true if and only if the tree is empty
+     */
+    public boolean empty() {
+        return this.root == null;
+    }
 
- /**
-   * public String search(int k)
-   *
-   * returns the info of an item with key k if it exists in the tree
-   * otherwise, returns null
-   */
-  public String search(int k)
-  {
-	return "42";  // to be replaced by student code
-  }
+    private String searchRec(IAVLNode root, int k) {
+        if (k == root.getKey()) {
+            return root.getValue();
+        } else if (k < root.getKey()) {
+            if (root.getLeft() == null) return null;
+            return searchRec(root.getLeft(), k);
+        } else {
+            if (root.getRight() == null) return null;
+            return searchRec(root.getRight(), k);
+        }
+    }
 
-  /**
-   * public int insert(int k, String i)
-   *
-   * inserts an item with key k and info i to the AVL tree.
-   * the tree must remain valid (keep its invariants).
-   * returns the number of rebalancing operations, or 0 if no rebalancing operations were necessary.
-   * returns -1 if an item with key k already exists in the tree.
-   */
-   public int insert(int k, String i) {
-	  return 42;	// to be replaced by student code
-   }
+    /**
+     * public String search(int k)
+     * <p>
+     * returns the info of an item with key k if it exists in the tree
+     * otherwise, returns null
+     */
+    public String search(int k) {
+        return searchRec(this.root, k);
+    }
 
-  /**
-   * public int delete(int k)
-   *
-   * deletes an item with key k from the binary tree, if it is there;
-   * the tree must remain valid (keep its invariants).
-   * returns the number of rebalancing operations, or 0 if no rebalancing operations were needed.
-   * returns -1 if an item with key k was not found in the tree.
-   */
-   public int delete(int k)
-   {
-	   return 42;	// to be replaced by student code
-   }
+    /**
+     * public int insert(int k, String i)
+     * <p>
+     * inserts an item with key k and info i to the AVL tree.
+     * the tree must remain valid (keep its invariants).
+     * returns the number of rebalancing operations, or 0 if no rebalancing operations were necessary.
+     * returns -1 if an item with key k already exists in the tree.
+     */
+    public int insert(int k, String i) {
+        return 42;    // to be replaced by student code
+    }
 
-   /**
-    * public String min()
-    *
-    * Returns the info of the item with the smallest key in the tree,
-    * or null if the tree is empty
-    */
-   public String min()
-   {
-	   return "42"; // to be replaced by student code
-   }
+    /**
+     * public int delete(int k)
+     * <p>
+     * deletes an item with key k from the binary tree, if it is there;
+     * the tree must remain valid (keep its invariants).
+     * returns the number of rebalancing operations, or 0 if no rebalancing operations were needed.
+     * returns -1 if an item with key k was not found in the tree.
+     */
+    public int delete(int k) {
+        return 42;    // to be replaced by student code
+    }
 
-   /**
-    * public String max()
-    *
-    * Returns the info of the item with the largest key in the tree,
-    * or null if the tree is empty
-    */
-   public String max()
-   {
-	   return "42"; // to be replaced by student code
-   }
+    /**
+     * public String min()
+     * <p>
+     * Returns the info of the item with the smallest key in the tree,
+     * or null if the tree is empty
+     */
+    public String min() {
+        IAVLNode node = this.root;
+    	while (node.getLeft() != null) node=node.getLeft();
+    	return node.getValue();
+    }
 
-  /**
-   * public int[] keysToArray()
-   *
-   * Returns a sorted array which contains all keys in the tree,
-   * or an empty array if the tree is empty.
-   */
-  public int[] keysToArray()
-  {
+    /**
+     * public String max()
+     * <p>
+     * Returns the info of the item with the largest key in the tree,
+     * or null if the tree is empty
+     */
+    public String max() {
+		IAVLNode node = this.root;
+		while (node.getRight() != null) node=node.getRight();
+		return node.getValue();
+    }
+
+    private int[] keysToArray(IAVLNode node) {
+
+    	//if (node.getLeft()==null);
+	}
+
+    /**
+     * public int[] keysToArray()
+     * <p>
+     * Returns a sorted array which contains all keys in the tree,
+     * or an empty array if the tree is empty.
+     */
+    public int[] keysToArray() {
         int[] arr = new int[42]; // to be replaced by student code
         return arr;              // to be replaced by student code
-  }
+    }
 
-  /**
-   * public String[] infoToArray()
-   *
-   * Returns an array which contains all info in the tree,
-   * sorted by their respective keys,
-   * or an empty array if the tree is empty.
-   */
-  public String[] infoToArray()
-  {
+    /**
+     * public String[] infoToArray()
+     * <p>
+     * Returns an array which contains all info in the tree,
+     * sorted by their respective keys,
+     * or an empty array if the tree is empty.
+     */
+    public String[] infoToArray() {
         String[] arr = new String[42]; // to be replaced by student code
         return arr;                    // to be replaced by student code
-  }
+    }
 
-   /**
-    * public int size()
-    *
-    * Returns the number of nodes in the tree.
-    *
-    * precondition: none
-    * postcondition: none
-    */
-   public int size()
-   {
-	   return 42; // to be replaced by student code
-   }
-   
-     /**
-    * public int getRoot()
-    *
-    * Returns the root AVL node, or null if the tree is empty
-    *
-    * precondition: none
-    * postcondition: none
-    */
-   public IAVLNode getRoot()
-   {
-	   return null;
-   }
-     /**
-    * public string split(int x)
-    *
-    * splits the tree into 2 trees according to the key x. 
-    * Returns an array [t1, t2] with two AVL trees. keys(t1) < x < keys(t2).
-	  * precondition: search(x) != null
-    * postcondition: none
-    */   
-   public AVLTree[] split(int x)
-   {
-	   return null; 
-   }
-   /**
-    * public join(IAVLNode x, AVLTree t)
-    *
-    * joins t and x with the tree. 	
-    * Returns the complexity of the operation (rank difference between the tree and t)
-	  * precondition: keys(x,t) < keys() or keys(x,t) > keys()
-    * postcondition: none
-    */   
-   public int join(IAVLNode x, AVLTree t)
-   {
-	   return 0; 
-   }
+    /**
+     * public int size()
+     * <p>
+     * Returns the number of nodes in the tree.
+     * <p>
+     * precondition: none
+     * postcondition: none
+     */
+    public int size() {
+        return size;
+    }
+
+    /**
+     * public int getRoot()
+     * <p>
+     * Returns the root AVL node, or null if the tree is empty
+     * <p>
+     * precondition: none
+     * postcondition: none
+     */
+    public IAVLNode getRoot() {
+        return this.root;
+    }
+
+    /**
+     * public string split(int x)
+     * <p>
+     * splits the tree into 2 trees according to the key x.
+     * Returns an array [t1, t2] with two AVL trees. keys(t1) < x < keys(t2).
+     * precondition: search(x) != null
+     * postcondition: none
+     */
+    public AVLTree[] split(int x) {
+        return null;
+    }
+
+    /**
+     * public join(IAVLNode x, AVLTree t)
+     * <p>
+     * joins t and x with the tree.
+     * Returns the complexity of the operation (rank difference between the tree and t)
+     * precondition: keys(x,t) < keys() or keys(x,t) > keys()
+     * postcondition: none
+     */
+    public int join(IAVLNode x, AVLTree t) {
+        return 0;
+    }
 
 	/**
 	   * public interface IAVLNode
