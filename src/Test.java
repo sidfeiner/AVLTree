@@ -7,25 +7,26 @@ public class Test {
 	public static void main(String[] args) {
 		AVLTree tree = new AVLTree();
 		
-		for(int i=1;i<30;i=i+2)
+		for(int i=1;i<30;i=i+2) {
 			tree.insert(i, Integer.toString(i));
-		printTree(tree.getRoot(),0);
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		tree.delete(15); // prob
-		tree.delete(13);
-		tree.delete(7);
-		tree.delete(27);
-		tree.delete(11);
-		tree.delete(23);
-		printTree(tree.getRoot(),0);
-		//tree.delete(7); // prob
-		//tree.rotateLeft(tree.root.getRight().getRight());
-		//System.out.println(tree.delete(5)); 
-		
-		//printTree(tree.getRoot(),0);
+			printTree(tree.getRoot(), 0);
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			tree.delete(15); // prob
+			tree.delete(13);
+			tree.delete(7);
+			tree.delete(27);
+			tree.delete(11);
+			tree.delete(23);
+			printTree(tree.getRoot(), 0);
+			//tree.delete(7); // prob
+			//tree.rotateLeft(tree.root.getRight().getRight());
+			//System.out.println(tree.delete(5));
+
+			//printTree(tree.getRoot(),0);
+		}
 	}
 
 	public static void printTree(AVLTree.IAVLNode node, int level){ //call with root,level=0

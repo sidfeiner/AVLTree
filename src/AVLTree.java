@@ -90,6 +90,7 @@ public class AVLTree {
 
     private int[] keysToArray(IAVLNode node) {
 
+        return null;
     	//if (node.getLeft()==null);
 	}
 
@@ -168,6 +169,21 @@ public class AVLTree {
 	   * public interface IAVLNode
 	   * ! Do not delete or modify this - otherwise all tests will fail !
 	   */
+
+
+	private void rotateRight(AVLNode node){
+	    IAVLNode tempB = node.getRight();
+	    IAVLNode tempY = node.getParent();
+
+	    tempY.setLeft(tempB);
+	    node.setParent(tempY.getParent());
+	    node.setRight(tempY);
+
+	    tempY.setHeight(1+Math.max(tempY.getRight().getHeight(),tempY.getLeft().getHeight()));
+	    node.setHeight(1+Math.max(node.getRight().getHeight(),node.getLeft().getHeight()));
+
+    }
+
 	public interface IAVLNode{	
 		public int getKey(); //returns node's key (for virtuval node return -1)
 		public String getValue(); //returns node's value [info] (for virtuval node return null)
