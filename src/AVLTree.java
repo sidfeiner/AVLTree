@@ -8,6 +8,7 @@
 public class AVLTree {
     private IAVLNode root;
     private int size;
+    private IAVLNode virtal =new AVLNode(-1,"Virtual",true);
 
     /**
      * public boolean empty()
@@ -49,7 +50,14 @@ public class AVLTree {
      * returns -1 if an item with key k already exists in the tree.
      */
     public int insert(int k, String i) {
-        return 42;    // to be replaced by student code
+        IAVLNode newNode = new AVLNode(k,i,false);
+        if(!empty()){
+            treeInsert(k,newNode);
+        }
+        else {
+            root = newNode;
+        }
+        return 0;
     }
 
     /**
@@ -184,6 +192,37 @@ public class AVLTree {
 
     }
 
+    private IAVLNode treePosition(int k){
+	    IAVLNode x = root;
+	    IAVLNode y=null;
+        while (x!=null){
+            y=x;
+            if(k == x.getKey()){
+                return y;
+            }
+            else{
+                if(k<x.getKey()){
+                    x=x.getLeft();
+                }
+                else {
+                    x = x.getRight();
+                }
+            }
+        }
+        return y;
+    }
+
+    private void treeInsert(int k,IAVLNode z){
+	    IAVLNode y = treePosition(k);
+	    z.setParent(y);
+	    if(z.getKey()<y.getKey()){
+	        y.setLeft(z);
+        }
+	    else {
+	        y.setRight(z);
+        }
+
+    }
 	public interface IAVLNode{	
 		public int getKey(); //returns node's key (for virtuval node return -1)
 		public String getValue(); //returns node's value [info] (for virtuval node return null)
@@ -214,9 +253,12 @@ public class AVLTree {
 		IAVLNode left,right,parent;
 
 
-		public AVLNode(int key,String info){
+		public AVLNode(int key,String info,boolean isVirtual){
 			this.key = key;
 			this.info = info;
+			if(isVirtual){
+			    height = -1;
+            }
 		}
 
 		public int getKey()
@@ -256,20 +298,19 @@ public class AVLTree {
 		// Returns True if this is a non-virtual AVL node
 		public boolean isRealNode()
 		{
-			return !((parent == null)&&(left==null)&&(right==null));
+			return (getHeight() != -1);
 		}
 
-    public void setHeight(int height)
-    {
-      this.height = height;
-    }
-    public int getHeight()
-    {
-      if(this.isRealNode()){
-      	return height;
-	  }
-      return 1;
-    }
+		public void setHeight(int height)
+        {
+            if(this.getHeight()!= -1) {
+                this.height = height;
+            }
+        }
+        public int getHeight()
+        {
+      	    return height;
+	    }
   }
 
 }
