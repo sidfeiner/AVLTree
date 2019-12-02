@@ -180,50 +180,67 @@ public class AVLTree {
    * (It must implement IAVLNode)
    */
   public class AVLNode implements IAVLNode{
+
+ 		int key,height;
+ 		String info;
+		IAVLNode left,right,parent;
+
+
+		public AVLNode(int key,String info){
+			this.key = key;
+			this.info = info;
+		}
+
 		public int getKey()
 		{
-			return 42; // to be replaced by student code
+			return key;
 		}
 		public String getValue()
 		{
-			return null; // to be replaced by student code
+			return info;
 		}
 		public void setLeft(IAVLNode node)
 		{
-			return null; // to be replaced by student code
+			left = node;
+
 		}
 		public IAVLNode getLeft()
 		{
-			return null; // to be replaced by student code
+			return left;
 		}
 		public void setRight(IAVLNode node)
 		{
-			return null; // to be replaced by student code
+			right = node;
+
 		}
 		public IAVLNode getRight()
 		{
-			return null; // to be replaced by student code
+			return right;
 		}
 		public void setParent(IAVLNode node)
 		{
-			return null; // to be replaced by student code
+			parent = node;
 		}
 		public IAVLNode getParent()
 		{
-			return null; // to be replaced by student code
+			return parent;
 		}
 		// Returns True if this is a non-virtual AVL node
 		public boolean isRealNode()
 		{
-			return true; // to be replaced by student code
+			return !((parent == null)&&(left==null)&&(right==null));
 		}
+
     public void setHeight(int height)
     {
-      return null; // to be replaced by student code
+      this.height = height;
     }
     public int getHeight()
     {
-      return 42; // to be replaced by student code
+      if(this.isRealNode()){
+      	return height;
+	  }
+      return 1;
     }
   }
 
