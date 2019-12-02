@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="db7ecb0d-c5a8-4dbd-80e0-cd1534ff3c8c" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution>
+      <executable />
+    </execution>
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="1UQrINRWaRAib2Zr3iCesPPcu5T" />
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="SbtLocalSettings">
+    <option name="projectSyncType">
+      <map>
+        <entry key="$USER_HOME$/work/CreditCommons" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/DataHistoryCommons" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/DataHistoryExporter" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/PushUpdatedUserProfiles" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/Text Tagging/KeywordsSearcher" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/Text Tagging/RulesEngineScala" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/api-reader" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/CellProximityHistoryJob" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/DataHistoryCommons" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/GeofencingHistoryJob" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/NetworkLastIpJob" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/UserLocationHistoryJob" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/WifiProximityHistoryJob" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/soda-async-apis" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/user-apps-history" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/async-apis/user-wifi-history" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/clients-common" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/counters-api" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/csv2parquet" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/data-api" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/data-reporters" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/flink-consumer" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/lkp-sync" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/lookups-common" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/mparticle-audience-consumer" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/parquet-compactor" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/poi-scraper" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/sdp-api-common" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/sdp-common" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/spark-common" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/spark-consumer" value="PREVIEW" />
+        <entry key="$USER_HOME$/work/topic-router" value="PREVIEW" />
+      </map>
+    </option>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+</project>
