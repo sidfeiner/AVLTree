@@ -277,6 +277,10 @@ public class AVLTree {
         node.setParent(tempY.getParent());
         node.setRight(tempY);
 
+        if(tempY == this.root){
+            this.root = node;
+        }
+
         tempY.setHeight(1 + Math.max(tempY.getRight().getHeight(), tempY.getLeft().getHeight()));
         node.setHeight(1 + Math.max(node.getRight().getHeight(), node.getLeft().getHeight()));
 
