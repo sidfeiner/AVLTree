@@ -48,7 +48,7 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        randomTest();
+        testForDango();
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();

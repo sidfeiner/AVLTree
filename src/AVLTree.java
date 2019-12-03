@@ -1,4 +1,3 @@
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -50,20 +49,22 @@ public class AVLTree {
             if (curNode.getLeft() == virtualNode) {
                 curNode.setLeft(insertNode);
                 insertNode.setParent(curNode);
+                return true;
             } else {
-                insertRec(curNode.getLeft(), insertNode);
+                return insertRec(curNode.getLeft(), insertNode);
             }
         } else if (insertNode.getKey() > curNode.getKey()) {
             if (curNode.getRight() == virtualNode) {
                 curNode.setRight(insertNode);
                 insertNode.setParent(curNode);
+                return true;
             } else {
-                insertRec(curNode.getRight(), insertNode);
+                return insertRec(curNode.getRight(), insertNode);
             }
         } else {
+            // Key already exists
             return false;
         }
-        return true;
     }
 
     private void promoteNode(IAVLNode node) {
@@ -118,10 +119,12 @@ public class AVLTree {
         AVLNode node = new AVLNode(k, i);
         if (this.root == null) {
             this.root = node;
+            this.size++;
             return 0;
         }
         boolean inserted = insertRec(this.root, node);
         if (!inserted) return -1;
+        this.size++;
         return rebalanceTree(node);
     }
 
@@ -277,7 +280,7 @@ public class AVLTree {
         node.setParent(tempY.getParent());
         node.setRight(tempY);
 
-        if(tempY == this.root){
+        if (tempY == this.root) {
             this.root = node;
         }
 
