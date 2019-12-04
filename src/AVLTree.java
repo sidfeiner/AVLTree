@@ -97,8 +97,10 @@ public class AVLTree {
             if (rightRankDiff == 0) {
                 logger.finest("we have 2-0 case, rotating left");
                 rotateLeft(node);
+                parent = node;
             } else {
                 logger.finest("we have 0-2 case, rotating right");
+                parent = node;
                 rotateRight(node);
             }
             return 1 + rebalanceTree(parent);
