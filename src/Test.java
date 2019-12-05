@@ -18,6 +18,11 @@ public class Test {
             Thread.sleep(200L);
             System.out.println("------");
         }
+
+
+        tree.delete(7);
+        BTreePrinter.printNode(tree.getRoot());
+
     }
 
     public static AVLTree testForSid() throws InterruptedException {
@@ -50,6 +55,7 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        testForDango();
         AVLTree tree = randomTest();
         for(int i: tree.keysToArray()){
             System.out.println(i);
