@@ -10,7 +10,7 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        int[] keys = {7, 6, 5};
+        int[] keys = {7, 6, 5,1,2,3,4};
 
         for (int k : keys) {
             tree.insert(k, Integer.toString(k));
@@ -20,14 +20,11 @@ public class Test {
         }
 
 
-        tree.delete(7);
-        BTreePrinter.printNode(tree.getRoot());
-
     }
 
     public static AVLTree testForSid() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        int[] keys = {36,91,55};
+        int[] keys = {7, 6, 5,1,2,3,4};
 
         for (int k : keys) {
             tree.insert(k, Integer.toString(k));
