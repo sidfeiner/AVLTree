@@ -190,7 +190,7 @@ public class AVLTree {
     }
 
     private void deleteLeaf(IAVLNode node) {
-        logger.finest("Deleting leaf: ");
+        logger.finest("Deleting leaf from tree");
         if (node == this.root) {
             this.root = null;
         } else {
@@ -200,12 +200,12 @@ public class AVLTree {
             } else {
                 node.getParent().setLeft(virtualNode);
             }
-            node.setParent(null);
             parent.setHeight(1 + Math.max(parent.getLeft().getHeight(), parent.getRight().getHeight()));
         }
     }
 
     private void deleteUnaryNode(IAVLNode node) {
+        logger.finest("Deleting unaryNode from tree");
         if (node == this.root) {
             if (node.getRight().isRealNode()) {
                 this.root = node.getRight();
@@ -238,16 +238,41 @@ public class AVLTree {
 
 
     private void swapNodeWithSuccessorAndDelete(IAVLNode node) {
-        IAVLNode successor = getSuccessor(node);
-        if (successor.isLeaf()) {
-            deleteLeaf(successor);
+        logger.finest("Deleting via successor from tree");
+        IAVLNode nodeToDelete = swapNodeWithSuccessor(node);
+        if (nodeToDelete.isLeaf()) {
+            deleteLeaf(nodeToDelete);
         } else {
-            deleteUnaryNode(successor);
+            deleteUnaryNode(nodeToDelete);
         }
+
+    }
+
+    private IAVLNode swapNodeWithSuccessor(IAVLNode node){
+        IAVLNode successor = getSuccessor(node);
+        IAVLNode successorParent = successor.getParent();
+        boolean successorIsRight = successorParent.getRight() == successor;
+
         successor.setParent(node.getParent());
-        successor.setRight(node.getRight());
         successor.setLeft(node.getLeft());
-        successor.setHeight(1 + Math.max(successor.getLeft().getHeight(), successor.getRight().getHeight()));
+        if (successor != node.getRight()) {
+            successor.setRight(node.getRight());
+        }
+        else {
+            successor.setRight(virtualNode);
+        }
+        successor.setHeight(node.getHeight());
+        node.setHeight(successor.getHeight());
+        if(successorIsRight) {
+            successorParent.setRight(node);
+            return successorParent.getRight();
+        }
+        else {
+            successorParent.setLeft(node);
+            return successorParent.getLeft();
+        }
+
+
     }
 
 
@@ -400,13 +425,13 @@ public class AVLTree {
         if(grandParent == null){
             this.root = node;
         }
-        if(grandParent.getLeft() == parent){
-            grandParent.setLeft(node);
-        }
         else {
-            grandParent.setRight(node);
+            if (grandParent.getLeft() == parent) {
+                grandParent.setLeft(node);
+            } else {
+                grandParent.setRight(node);
+            }
         }
-
 
         parent.setHeight(1 + Math.max(parent.getRight().getHeight(), parent.getLeft().getHeight()));
         node.setHeight(1 + Math.max(node.getRight().getHeight(), node.getLeft().getHeight()));
@@ -445,9 +470,9 @@ public class AVLTree {
     private IAVLNode getSuccessor(IAVLNode node) {
         IAVLNode y = node;
         IAVLNode parent;
-        if (node.getRight() != null) {
+        if (node.getRight().isRealNode()) {
             y = node.getRight();
-            while (y.getLeft() != null) {
+            while (y.getLeft().isRealNode()) {
                 y = y.getLeft();
             }
             return y;

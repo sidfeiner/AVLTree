@@ -19,6 +19,13 @@ public class Test {
             System.out.println("------");
         }
 
+        tree.delete(4);
+        BTreePrinter.printNode(tree.getRoot());
+        tree.delete(2);
+        BTreePrinter.printNode(tree.getRoot());
+        tree.delete(6);
+        BTreePrinter.printNode(tree.getRoot());
+
 
     }
 
