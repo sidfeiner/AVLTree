@@ -93,14 +93,28 @@ public class AVLTree {
             promoteNode(parent);
             return 1 + rebalanceTree(parent);
         } else if (leftRankDiff + rightRankDiff == 2 && leftRankDiff != 1) {
-            // case of 2-0 or 0-2
+            // case of 2-0 or 0-2 or 1-3+ or 3+-1
             if (rightRankDiff == 0) {
+                // 2-0
                 logger.finest("we have 2-0 case, rotating left");
-                rotateLeft(node);
                 parent = node;
+                if (node.getHeight() - node.getLeft().getHeight() == 1 && node.getHeight() - node.getRight().getHeight() == 2) {
+                    logger.finest("double rotating needed, first rotate with left child");
+                    IAVLNode left = node.getLeft();
+                    rotateRight(left);
+                    node = left;
+                }
+                rotateLeft(node);
             } else {
+                // 0-2
                 logger.finest("we have 0-2 case, rotating right");
                 parent = node;
+                if (node.getHeight() - node.getLeft().getHeight() == 2 && node.getHeight() - node.getRight().getHeight() == 1) {
+                    logger.finest("double rotating needed, first rotate with right child");
+                    IAVLNode right = node.getRight();
+                    rotateLeft(right);
+                    node = right;
+                }
                 rotateRight(node);
             }
             return 1 + rebalanceTree(parent);
@@ -168,10 +182,10 @@ public class AVLTree {
 
     private int[] keysToArray(IAVLNode node) {
         int[] left, right, finalArray;
-        if (node.getLeft() == null) left = new int[0];
+        if (node.getLeft() == virtualNode) left = new int[0];
         else left = keysToArray(node.getLeft());
 
-        if (node.getRight() == null) right = new int[0];
+        if (node.getRight() == virtualNode) right = new int[0];
         else right = keysToArray(node.getRight());
 
         finalArray = new int[left.length + right.length + 1];
@@ -188,8 +202,7 @@ public class AVLTree {
      * or an empty array if the tree is empty.
      */
     public int[] keysToArray() {
-        int[] arr = new int[42]; // to be replaced by student code
-        return arr;              // to be replaced by student code
+        return keysToArray(this.root);
     }
 
     /**

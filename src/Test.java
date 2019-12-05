@@ -20,9 +20,9 @@ public class Test {
         }
     }
 
-    public static void testForSid() throws InterruptedException {
+    public static AVLTree testForSid() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        int[] keys = {50, 89, 21, 54, 40, 42, 17};
+        int[] keys = {36,91,55};
 
         for (int k : keys) {
             tree.insert(k, Integer.toString(k));
@@ -30,9 +30,10 @@ public class Test {
             Thread.sleep(200L);
             System.out.println("------");
         }
+        return tree;
     }
 
-    public static void randomTest() throws InterruptedException {
+    public static AVLTree randomTest() throws InterruptedException {
         AVLTree tree = new AVLTree();
         double key;
         int intKey;
@@ -45,10 +46,14 @@ public class Test {
             System.out.println("-----------------");
             Thread.sleep(500L);
         }
+        return tree;
     }
 
     public static void main(String[] args) throws InterruptedException {
-        testForDango();
+        AVLTree tree = randomTest();
+        for(int i: tree.keysToArray()){
+            System.out.println(i);
+        }
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();
