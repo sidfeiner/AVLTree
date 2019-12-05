@@ -397,20 +397,27 @@ public class AVLTree {
     }
 
     private void rotateRight(IAVLNode node) {
+        IAVLNode parent = node.getParent();
+        IAVLNode grandParent = parent.getParent();
         IAVLNode tempB = node.getRight();
-        IAVLNode tempY = node.getParent();
 
-        if (tempY == this.root) {
+        node.setParent(grandParent);
+        parent.setLeft(tempB);
+        tempB.setParent(parent);
+        node.setRight(parent);
+        parent.setParent(node);
+        if(grandParent == null){
             this.root = node;
         }
+        if(grandParent.getLeft() == parent){
+            grandParent.setLeft(node);
+        }
+        else {
+            grandParent.setRight(node);
+        }
 
-        tempY.setLeft(tempB);
-        node.setParent(tempY.getParent());
-        node.setRight(tempY);
-        tempY.setParent(node);
 
-
-        tempY.setHeight(1 + Math.max(tempY.getRight().getHeight(), tempY.getLeft().getHeight()));
+        parent.setHeight(1 + Math.max(parent.getRight().getHeight(), parent.getLeft().getHeight()));
         node.setHeight(1 + Math.max(node.getRight().getHeight(), node.getLeft().getHeight()));
 
     }
