@@ -27,6 +27,7 @@ public class Test {
         int[] keys = {7, 6, 5,1,2,3,4};
 
         for (int k : keys) {
+            logger.finest("inserting key: " + k);
             tree.insert(k, Integer.toString(k));
             BTreePrinter.printNode(tree.getRoot());
             Thread.sleep(200L);
@@ -53,10 +54,6 @@ public class Test {
 
     public static void main(String[] args) throws InterruptedException {
         testForDango();
-        AVLTree tree = randomTest();
-        for(int i: tree.keysToArray()){
-            System.out.println(i);
-        }
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();
