@@ -10,7 +10,7 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        int[] keys = {7, 6, 5, 1, 2, 3, 4};
+        int[] keys = {9,5,11,13,15,2};
 
         for (int k : keys) {
             tree.insert(k, Integer.toString(k));
@@ -19,13 +19,12 @@ public class Test {
             System.out.println("------");
         }
 
-        tree.delete(4);
-        BTreePrinter.printNode(tree.getRoot());
-        tree.delete(2);
-        BTreePrinter.printNode(tree.getRoot());
-        tree.delete(6);
-        BTreePrinter.printNode(tree.getRoot());
-
+        for (int k : keys) {
+            tree.delete(k);
+            BTreePrinter.printNode(tree.getRoot());
+            Thread.sleep(200L);
+            System.out.println("------");
+        }
 
     }
 
@@ -83,6 +82,7 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        testForDango();
         AVLTree tree = testForSid();
         System.out.println(tree);
         logger.finest("testing parents...");

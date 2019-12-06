@@ -184,9 +184,18 @@ public class AVLTree {
             deleteUnaryNode(node);
             return (rebalanceAfterDelete(node.getParent()));
         }
-        IAVLNode successParent = getSuccessor(node).getParent();
-        swapNodeWithSuccessorAndDelete(node);
-        return rebalanceAfterDelete(successParent);
+        IAVLNode nodeToDelete = swapNodeWithSuccessor(node);
+        deleteAfterSuccessorSwap(nodeToDelete);
+        return rebalanceAfterDelete(nodeToDelete.getParent());
+    }
+
+    private void deleteAfterSuccessorSwap(IAVLNode nodeToDelete) {
+        if(nodeToDelete.isLeaf()){
+            deleteLeaf(nodeToDelete);
+        }
+        else {
+            deleteUnaryNode(nodeToDelete);
+        }
     }
 
     private void deleteLeaf(IAVLNode node) {
@@ -200,7 +209,7 @@ public class AVLTree {
             } else {
                 node.getParent().setLeft(virtualNode);
             }
-            parent.setHeight(1 + Math.max(parent.getLeft().getHeight(), parent.getRight().getHeight()));
+
         }
     }
 
@@ -220,60 +229,39 @@ public class AVLTree {
             {
                 if (parent.getRight() == node) {
                     if (node.getRight().isRealNode()) {
-                        parent.setRight(node.getLeft());
-                    } else {
                         parent.setRight(node.getRight());
+                    } else {
+                        parent.setRight(virtualNode);
                     }
                 } else {
-                    if (node.getRight().isRealNode()) {
+                    if (node.getLeft().isRealNode()) {
                         parent.setLeft(node.getLeft());
                     } else {
-                        parent.setLeft(node.getRight());
+                        parent.setLeft(virtualNode);
                     }
                 }
-                parent.setHeight(parent.getHeight() - 1);
             }
         }
     }
 
 
-    private void swapNodeWithSuccessorAndDelete(IAVLNode node) {
-        logger.finest("Deleting via successor from tree");
-        IAVLNode nodeToDelete = swapNodeWithSuccessor(node);
-        if (nodeToDelete.isLeaf()) {
-            deleteLeaf(nodeToDelete);
-        } else {
-            deleteUnaryNode(nodeToDelete);
-        }
-
-    }
-
-    private IAVLNode swapNodeWithSuccessor(IAVLNode node){
+    private IAVLNode swapNodeWithSuccessor(IAVLNode node) {
+        logger.finest("Swapping node with successor and deleting NODE");
         IAVLNode successor = getSuccessor(node);
-        IAVLNode successorParent = successor.getParent();
-        boolean successorIsRight = successorParent.getRight() == successor;
+        swapNode(node,successor);
+        return successor;
+    }
 
-        successor.setParent(node.getParent());
-        successor.setLeft(node.getLeft());
-        if (successor != node.getRight()) {
-            successor.setRight(node.getRight());
-        }
-        else {
-            successor.setRight(virtualNode);
-        }
-        successor.setHeight(node.getHeight());
-        node.setHeight(successor.getHeight());
-        if(successorIsRight) {
-            successorParent.setRight(node);
-            return successorParent.getRight();
-        }
-        else {
-            successorParent.setLeft(node);
-            return successorParent.getLeft();
-        }
-
+    private void swapNode(IAVLNode node1,IAVLNode node2){
+        int node1key = node1.getKey();
+        String node1value = node1.getValue();
+        node1.setKey(node2.getKey());
+        node1.setValue(node2.getValue());
+        node2.setKey(node1key);
+        node2.setValue(node1value);
 
     }
+
 
 
     /**
@@ -505,7 +493,6 @@ public class AVLTree {
     private int rebalanceAfterDelete(IAVLNode parent) {
         int sum = 0;
         while (parent != null && !isRankDifferenceLegal(parent)) {
-            parent.setHeight(1 + Math.max(parent.getLeft().getHeight(), parent.getRight().getHeight()));
             if (rankDifferenceRight(parent) == 2 && rankDifferenceLeft(parent) == 2) {
                 logger.finest("We have 2-2 case");
                 logger.finest("Demoting parent");
@@ -591,6 +578,10 @@ public class AVLTree {
         public boolean isLeaf(); //returns True if the node is a leaf
 
         public boolean isUnaryNode(); //returns True if the node is a unary Node
+
+        public void setKey(int key); //sets key for node (inside use)
+
+        public void setValue(String info); //sets value for node
     }
 
     /**
@@ -680,6 +671,14 @@ public class AVLTree {
 
         public boolean isUnaryNode() {
             return (this.getRight().isRealNode() && !this.getLeft().isRealNode()) || ((!this.getRight().isRealNode() && this.getLeft().isRealNode()));
+        }
+
+        public void setKey(int k){
+            this.key = k;
+        }
+
+        public void setValue(String value){
+            this.info = value;
         }
     }
 
