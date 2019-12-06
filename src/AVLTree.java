@@ -203,7 +203,6 @@ public class AVLTree {
         if (node == this.root) {
             this.root = null;
         } else {
-            IAVLNode parent = node.getParent();
             if (node.getParent().getRight() == node) { // Y is right child of parent
                 node.getParent().setRight(virtualNode);
             } else {
@@ -214,6 +213,7 @@ public class AVLTree {
     }
 
     private void deleteUnaryNode(IAVLNode node) {
+        //*****pick up from here - problem
         logger.finest("Deleting unaryNode from tree");
         if (node == this.root) {
             if (node.getRight().isRealNode()) {
@@ -225,7 +225,7 @@ public class AVLTree {
             }
         } else {
             IAVLNode parent = node.getParent();
-            logger.finest("Deleting unary node: ");
+            logger.finest("Deleting unary node with key: " + node.getKey());
             {
                 if (parent.getRight() == node) {
                     if (node.getRight().isRealNode()) {
@@ -246,7 +246,7 @@ public class AVLTree {
 
 
     private IAVLNode swapNodeWithSuccessor(IAVLNode node) {
-        logger.finest("Swapping node with successor and deleting NODE");
+        logger.finest("Swapping node " + node.getKey() + "with successor and deleting it");
         IAVLNode successor = getSuccessor(node);
         swapNode(node,successor);
         return successor;
@@ -495,39 +495,47 @@ public class AVLTree {
         while (parent != null && !isRankDifferenceLegal(parent)) {
             if (rankDifferenceRight(parent) == 2 && rankDifferenceLeft(parent) == 2) {
                 logger.finest("We have 2-2 case");
-                logger.finest("Demoting parent");
+                logger.finest("Demoting parent: " +parent.getKey());
                 parent.setHeight(parent.getHeight() - 1);
                 sum += 1;
             }
             if (rankDifferenceRight(parent) == 1 && rankDifferenceLeft(parent) == 3 && rankDifferenceLeft(parent.getRight()) == 1 && rankDifferenceRight(parent.getRight()) == 1) {
                 logger.finest("We have 3-1, 1-1 case");
                 rotateLeft(parent.getRight());
-                logger.finest("Performing left rotation, demoting z, promoting Y");
+                logger.finest("Performing left rotation on: " +parent.getRight() + " demoting: " +parent.getKey() );
                 parent.setHeight(parent.getHeight() - 1);
-                parent.getParent().setHeight(parent.getParent().getHeight() + 1);
-                sum += 3;
+                if (parent.getParent() != null) {
+                    logger.finest("Promoting: " +parent.getParent().getKey() );
+                    parent.getParent().setHeight(parent.getParent().getHeight() + 1);
+                    sum+=1;
+                }
+                sum += 2;
             }
             if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 1 && rankDifferenceRight(parent.getLeft()) == 1) {
                 logger.finest("We have 1-3, 1-1 case");
                 rotateRight(parent.getLeft());
-                logger.finest("Performing right rotation, demoting z, promoting Y");
+                logger.finest("Performing right rotation on: " +parent.getLeft() + " demoting: " + parent.getKey() );
                 parent.setHeight(parent.getHeight() - 1);
-                parent.getParent().setHeight(parent.getParent().getHeight() + 1);
-                sum += 3;
+                if (parent.getParent() != null) {
+                    logger.finest("Promoting: " +parent.getParent().getKey() );
+                    parent.getParent().setHeight(parent.getParent().getHeight() + 1);
+                    sum+=1;
+                }
+                sum += 2;
             }
 
             if (rankDifferenceRight(parent) == 1 && rankDifferenceLeft(parent) == 3 && rankDifferenceLeft(parent.getRight()) == 2 && rankDifferenceRight(parent.getRight()) == 1) {
                 logger.finest("We have 3-1, 2-1 case");
-                rotateLeft(parent.getRight());
-                logger.finest("Performing left rotation, demoting z twice");
                 parent.setHeight(parent.getHeight() - 2);
+                rotateLeft(parent.getRight());
+                logger.finest("Performing left rotation on: " +parent.getRight().getKey() + "demoting twice: " + parent.getKey());
                 sum += 2;
             }
             if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 1 && rankDifferenceRight(parent.getLeft()) == 2) {
                 logger.finest("We have 1-3, 1-2 case");
-                rotateRight(parent.getLeft());
-                logger.finest("Performing Right rotation, demoting z twice");
                 parent.setHeight(parent.getHeight() - 2);
+                rotateRight(parent.getLeft());
+                logger.finest("Performing right rotation on: " +parent.getLeft().getKey() + "demoting twice: " + parent.getKey());
                 sum += 2;
             }
 
@@ -535,20 +543,25 @@ public class AVLTree {
                 logger.finest("We have 3-1, 1-2 case");
                 rotateRight(parent.getRight().getLeft());
                 logger.finest("Performing Double Rotation");
-                rotateLeft(parent);
+                rotateLeft(parent.getRight());
                 sum += 2;
             }
-            if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 2 && rankDifferenceRight(parent.getLeft()) == 2) {
+
+            if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 2 && rankDifferenceRight(parent.getLeft()) == 1) {
                 logger.finest("We have 1-3, 2-1 case");
-                rotateLeft(parent.getRight());
+                rotateLeft(parent.getLeft().getRight());
                 logger.finest("Performing Double Rotation");
-                rotateRight(parent);
+                rotateRight(parent.getLeft());
                 sum += 2;
             }
             parent = parent.getParent();
         }
-
-        logger.finest("Finished rebalancing");
+        if(parent == null){
+            logger.finest("Reached root, Finished rebalancing");
+        }
+        else {
+            logger.finest("Finished rebalancing before root");
+        }
         return sum;
     }
 
