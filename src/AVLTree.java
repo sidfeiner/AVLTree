@@ -395,6 +395,7 @@ public class AVLTree {
         boolean parentIsLeftChild = grandParent != null && grandParent.getLeft() == parent;
 
         parent.setRight(node.getLeft());
+        node.getLeft().setParent(parent);
         parent.setParent(node);
         node.setLeft(parent);
         node.setParent(grandParent);

@@ -10,7 +10,7 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        int[] keys = {7, 6, 5,1,2,3,4};
+        int[] keys = {7, 6, 5, 1, 2, 3, 4};
 
         for (int k : keys) {
             tree.insert(k, Integer.toString(k));
@@ -31,13 +31,15 @@ public class Test {
 
     public static AVLTree testForSid() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        int[] keys = {7, 6, 5,1,2,3,4};
+        int[] keys = {7, 6, 5, 1, 2, 3, 4};
 
         for (int k : keys) {
-            logger.finest("inserting key: " + k);
             tree.insert(k, Integer.toString(k));
             BTreePrinter.printNode(tree.getRoot());
             Thread.sleep(200L);
+            if (!testParents(tree.getRoot())) {
+                System.out.println("error with parents after inserting " + k);
+            }
             System.out.println("------");
         }
         return tree;
@@ -59,8 +61,33 @@ public class Test {
         return tree;
     }
 
+    public static boolean testParents(AVLTree.IAVLNode node) {
+        if (node.getHeight() == 0) return true;
+        else if (node.getRight().getHeight() == -1) {
+            boolean res = node.getLeft().getParent() == node;
+            if (!res) System.out.println("node " + node.getValue() + "'s left child has wrong parent");
+            return res&& testParents(node.getLeft());
+        } else if (node.getLeft().getHeight() == -1) {
+            boolean res = node.getRight().getParent() == node;
+            if (!res) System.out.println("node " + node.getValue() + "'s right child has wrong parent");
+            return res &&
+                    testParents(node.getRight());
+        }
+        boolean res =
+                node.getLeft().getParent() == node &&
+                        node.getRight().getParent() == node &&
+                        testParents(node.getRight()) &&
+                        testParents(node.getLeft());
+        if (!res) System.out.println("node " + node.getValue() + "'s children have wrong parent");
+        return res;
+    }
+
     public static void main(String[] args) throws InterruptedException {
-        testForDango();
+        AVLTree tree = testForSid();
+        System.out.println(tree);
+        logger.finest("testing parents...");
+        boolean isOk = testParents(tree.getRoot());
+        System.out.println(isOk);
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();
