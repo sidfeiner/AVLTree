@@ -170,7 +170,6 @@ public class AVLTree {
      * returns -1 if an item with key k was not found in the tree.
      */
     public int delete(int k) {
-        int rotateSum;
         IAVLNode node = searchForNode(k);
         if (node == null) {
             return -1;
@@ -190,19 +189,20 @@ public class AVLTree {
     }
 
     private void deleteAfterSuccessorSwap(IAVLNode nodeToDelete) {
-        if(nodeToDelete.isLeaf()){
+        if (nodeToDelete.isLeaf()) {
             deleteLeaf(nodeToDelete);
-        }
-        else {
+        } else {
             deleteUnaryNode(nodeToDelete);
         }
     }
 
     private void deleteLeaf(IAVLNode node) {
-        logger.finest("Deleting leaf from tree");
+
         if (node == this.root) {
+            logger.finest("Deleting leaf which is root from tree");
             this.root = null;
         } else {
+            logger.finest("Deleting leaf: " + node.getKey() + " from tree");
             if (node.getParent().getRight() == node) { // Y is right child of parent
                 node.getParent().setRight(virtualNode);
             } else {
@@ -213,9 +213,9 @@ public class AVLTree {
     }
 
     private void deleteUnaryNode(IAVLNode node) {
-        //*****pick up from here - problem
-        logger.finest("Deleting unaryNode from tree");
+
         if (node == this.root) {
+            logger.finest("Deleting unaryNode  which is root from tree");
             if (node.getRight().isRealNode()) {
                 this.root = node.getRight();
                 this.root.setParent(null);
@@ -230,12 +230,14 @@ public class AVLTree {
                 if (parent.getRight() == node) {
                     if (node.getRight().isRealNode()) {
                         parent.setRight(node.getRight());
+                        node.getRight().setParent(parent);
                     } else {
                         parent.setRight(virtualNode);
                     }
                 } else {
                     if (node.getLeft().isRealNode()) {
                         parent.setLeft(node.getLeft());
+                        node.getLeft().setParent(parent);
                     } else {
                         parent.setLeft(virtualNode);
                     }
@@ -246,13 +248,13 @@ public class AVLTree {
 
 
     private IAVLNode swapNodeWithSuccessor(IAVLNode node) {
-        logger.finest("Swapping node " + node.getKey() + "with successor and deleting it");
+        logger.finest("Swapping node: " + node.getKey() + " with successor and deleting it");
         IAVLNode successor = getSuccessor(node);
-        swapNode(node,successor);
+        swapNode(node, successor);
         return successor;
     }
 
-    private void swapNode(IAVLNode node1,IAVLNode node2){
+    private void swapNode(IAVLNode node1, IAVLNode node2) {
         int node1key = node1.getKey();
         String node1value = node1.getValue();
         node1.setKey(node2.getKey());
@@ -261,7 +263,6 @@ public class AVLTree {
         node2.setValue(node1value);
 
     }
-
 
 
     /**
@@ -411,10 +412,9 @@ public class AVLTree {
         tempB.setParent(parent);
         node.setRight(parent);
         parent.setParent(node);
-        if(grandParent == null){
+        if (grandParent == null) {
             this.root = node;
-        }
-        else {
+        } else {
             if (grandParent.getLeft() == parent) {
                 grandParent.setLeft(node);
             } else {
@@ -495,31 +495,31 @@ public class AVLTree {
         while (parent != null && !isRankDifferenceLegal(parent)) {
             if (rankDifferenceRight(parent) == 2 && rankDifferenceLeft(parent) == 2) {
                 logger.finest("We have 2-2 case");
-                logger.finest("Demoting parent: " +parent.getKey());
+                logger.finest("Demoting parent: " + parent.getKey());
                 parent.setHeight(parent.getHeight() - 1);
                 sum += 1;
             }
             if (rankDifferenceRight(parent) == 1 && rankDifferenceLeft(parent) == 3 && rankDifferenceLeft(parent.getRight()) == 1 && rankDifferenceRight(parent.getRight()) == 1) {
                 logger.finest("We have 3-1, 1-1 case");
+                logger.finest("Performing left rotation on: " + parent.getRight() + " demoting: " + parent.getKey());
                 rotateLeft(parent.getRight());
-                logger.finest("Performing left rotation on: " +parent.getRight() + " demoting: " +parent.getKey() );
                 parent.setHeight(parent.getHeight() - 1);
                 if (parent.getParent() != null) {
-                    logger.finest("Promoting: " +parent.getParent().getKey() );
+                    logger.finest("Promoting: " + parent.getParent().getKey());
                     parent.getParent().setHeight(parent.getParent().getHeight() + 1);
-                    sum+=1;
+                    sum += 1;
                 }
                 sum += 2;
             }
             if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 1 && rankDifferenceRight(parent.getLeft()) == 1) {
                 logger.finest("We have 1-3, 1-1 case");
+                logger.finest("Performing right rotation on: " + parent.getLeft() + " demoting: " + parent.getKey());
                 rotateRight(parent.getLeft());
-                logger.finest("Performing right rotation on: " +parent.getLeft() + " demoting: " + parent.getKey() );
                 parent.setHeight(parent.getHeight() - 1);
                 if (parent.getParent() != null) {
-                    logger.finest("Promoting: " +parent.getParent().getKey() );
+                    logger.finest("Promoting: " + parent.getParent().getKey());
                     parent.getParent().setHeight(parent.getParent().getHeight() + 1);
-                    sum+=1;
+                    sum += 1;
                 }
                 sum += 2;
             }
@@ -527,15 +527,15 @@ public class AVLTree {
             if (rankDifferenceRight(parent) == 1 && rankDifferenceLeft(parent) == 3 && rankDifferenceLeft(parent.getRight()) == 2 && rankDifferenceRight(parent.getRight()) == 1) {
                 logger.finest("We have 3-1, 2-1 case");
                 parent.setHeight(parent.getHeight() - 2);
+                logger.finest("Performing left rotation on: " + parent.getRight().getKey() + "demoting twice: " + parent.getKey());
                 rotateLeft(parent.getRight());
-                logger.finest("Performing left rotation on: " +parent.getRight().getKey() + "demoting twice: " + parent.getKey());
                 sum += 2;
             }
             if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 1 && rankDifferenceRight(parent.getLeft()) == 2) {
                 logger.finest("We have 1-3, 1-2 case");
                 parent.setHeight(parent.getHeight() - 2);
+                logger.finest("Performing right rotation on: " + parent.getLeft().getKey() + "demoting twice: " + parent.getKey());
                 rotateRight(parent.getLeft());
-                logger.finest("Performing right rotation on: " +parent.getLeft().getKey() + "demoting twice: " + parent.getKey());
                 sum += 2;
             }
 
@@ -556,10 +556,9 @@ public class AVLTree {
             }
             parent = parent.getParent();
         }
-        if(parent == null){
+        if (parent == null) {
             logger.finest("Reached root, Finished rebalancing");
-        }
-        else {
+        } else {
             logger.finest("Finished rebalancing before root");
         }
         return sum;
@@ -686,11 +685,11 @@ public class AVLTree {
             return (this.getRight().isRealNode() && !this.getLeft().isRealNode()) || ((!this.getRight().isRealNode() && this.getLeft().isRealNode()));
         }
 
-        public void setKey(int k){
+        public void setKey(int k) {
             this.key = k;
         }
 
-        public void setValue(String value){
+        public void setValue(String value) {
             this.info = value;
         }
     }
