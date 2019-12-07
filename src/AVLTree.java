@@ -311,10 +311,15 @@ public class AVLTree {
                 if (this.getRoot() == null && t.getRoot() != null) {
                     t.insert(x.getKey(), x.getValue());
                     this.root = t.getRoot();
+                    return t.getRoot().getHeight() + 1;
                 } else {
                     if (this.getRoot() != null && t.getRoot() == null) {
                         this.insert(x.getKey(), x.getValue());
+                        return this.getRoot().getHeight() + 1;
                     } else {
+                        this.root = x;
+                        x.setLeft(virtualNode);
+                        x.setRight(virtualNode);
                         return 1;
                     }
                 }

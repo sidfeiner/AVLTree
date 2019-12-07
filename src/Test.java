@@ -13,8 +13,8 @@ public class Test {
         AVLTree tree2 = new AVLTree();
         AVLTree tree3 = new AVLTree();
 
-        int [] smallKey = {1,2};
-        int [] bigKey = {7,8,9,10};
+        int [] smallKey = {};
+        int [] bigKey = {};
 
         for (int k : smallKey) {
             tree.insert(k, Integer.toString(k));
