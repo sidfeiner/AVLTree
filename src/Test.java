@@ -12,42 +12,32 @@ public class Test {
         AVLTree tree = new AVLTree();
         AVLTree tree2 = new AVLTree();
         AVLTree tree3 = new AVLTree();
-        tree3.insert(8,"8");
 
-        int[] keys = {1,2,3,4,5,6};
+        int [] smallKey = {1,2};
+        int [] bigKey = {7,8,9,10};
 
-        int[] keys2 = {10};
-
-
-        for (int k : keys) {
+        for (int k : smallKey) {
             tree.insert(k, Integer.toString(k));
-            BTreePrinter.printNode(tree.getRoot());
+
             Thread.sleep(200L);
+
             System.out.println("------");
         }
 
-        for (int k : keys2) {
+        for (int k :bigKey) {
             tree2.insert(k, Integer.toString(k));
-            BTreePrinter.printNode(tree2.getRoot());
+
             Thread.sleep(200L);
+
             System.out.println("------");
         }
 
+        BTreePrinter.printNode(tree.getRoot());
+        BTreePrinter.printNode(tree2.getRoot());
+        tree3.insert(5,"5");
 
         tree.join(tree3.getRoot(),tree2);
         BTreePrinter.printNode(tree.getRoot());
-        Thread.sleep(200L);
-        System.out.println("------");
-
-        /*
-        int[] delkeys = {7, 20, 9, 13, 15, 2, 11, 18};
-        for (int k : delkeys) {
-            tree.delete(k);
-            BTreePrinter.printNode(tree.getRoot());
-            Thread.sleep(200L);
-            System.out.println("------");
-        }*/
-
 
     }
 
@@ -107,11 +97,6 @@ public class Test {
 
     public static void main(String[] args) throws InterruptedException {
         testForDango();
-        AVLTree tree = testForSid();
-        System.out.println(tree);
-        logger.finest("testing parents...");
-        boolean isOk = testParents(tree.getRoot());
-        System.out.println(isOk);
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();

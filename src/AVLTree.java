@@ -296,115 +296,81 @@ public class AVLTree {
      */
     public int join(IAVLNode x, AVLTree t) {
         if (t.getRoot() != null && this.getRoot() != null) {
-            if (t.getRoot().getHeight() > this.getRoot().getHeight()) { //t is taller than this.tree
-                if (x.getKey() > this.getRoot().getKey()) {
-                    joinBigKeyTreeWithHigherRank(x, t);
-                } else {
-                    joinLowKeyTreeWithHigherRank(x, t);
-                }
+            if (x.getKey() > this.getRoot().getKey()) {
+                joinBiggerKeyTree(x, t);
             } else {
-                if (t.getRoot().getHeight() < this.getRoot().getHeight()) {
-                    if (x.getKey() > this.getRoot().getKey()) {
-                        joinBigKeyTreeWithLowerRank(x, t);
-                    } else {
-                        joinLowKeyTreeWithLowerRank(x, t);
-                    }
+                if (x.getKey() > this.getRoot().getKey()) {
+                    joinSmallerKeyTree(x, t);
                 } else { // equal height
                     joinTreeWithEqualHeight(x, t);
                 }
             }
         } else {
-            if (this.getRoot() == null && t.getRoot() != null) {
-                t.insert(x.getKey(), x.getValue());
-                this.root = t.getRoot();
-            } else {
-                if (this.getRoot() != null && t.getRoot() == null) {
-                    this.insert(x.getKey(), x.getValue());
+
+            {
+                if (this.getRoot() == null && t.getRoot() != null) {
+                    t.insert(x.getKey(), x.getValue());
+                    this.root = t.getRoot();
                 } else {
-                    return 1;
+                    if (this.getRoot() != null && t.getRoot() == null) {
+                        this.insert(x.getKey(), x.getValue());
+                    } else {
+                        return 1;
+                    }
                 }
             }
-        }
 
+        }
         return Math.abs(this.getRoot().getHeight() - t.getRoot().getHeight()) + 1;
     }
 
-
-    private void joinBigKeyTreeWithLowerRank(IAVLNode x, AVLTree t) {
-        IAVLNode joinNode = this.getRoot();
-        while (joinNode.getHeight() > t.getRoot().getHeight()) {
-            joinNode = joinNode.getRight();
-        }
-        x.setLeft(joinNode);
-        x.setRight(t.getRoot());
-        x.setParent(joinNode.getParent());
-        joinNode.getParent().setRight(x);
-        joinNode.setParent(x);
-        t.getRoot().setParent(x);
-        rebalanceTree(x.getParent());
-        if (this.getRoot().getHeight() - t.getRoot().getHeight() == 1) {
-            this.root = x;
-        }
-        this.size = this.size + t.size() + 1;
-    }
-
-    private void joinBigKeyTreeWithHigherRank(IAVLNode x, AVLTree t) {
+    private void joinBiggerKeyTree(IAVLNode x, AVLTree t) {
         IAVLNode joinNode = t.getRoot();
-        while (joinNode.getHeight() > this.getRoot().getHeight()) {
+        while (joinNode.getHeight() > this.root.getHeight()) {
             joinNode = joinNode.getLeft();
         }
+        x.setRight(joinNode);
         x.setLeft(this.getRoot());
-        x.setRight(joinNode);
         x.setParent(joinNode.getParent());
-        joinNode.getParent().setLeft(x);
-        joinNode.setParent(x);
+
         this.getRoot().setParent(x);
-        this.root = t.getRoot();
-        rebalanceTree(x.getParent());
-        if (t.getRoot().getHeight() - this.getRoot().getHeight() == 1) {
+        if (joinNode != t.getRoot()) {
+            joinNode.getParent().setLeft(x);
+            joinNode.setParent(x);
+            this.root = t.getRoot();
+            rebalanceTree(x.getParent());
+        } else {
             this.root = x;
         }
+
+
         this.size = this.size + t.size() + 1;
     }
 
-    private void joinLowKeyTreeWithLowerRank(IAVLNode x, AVLTree t) {
+    private void joinSmallerKeyTree(IAVLNode x, AVLTree t) {
         IAVLNode joinNode = this.getRoot();
-        while (joinNode.getHeight() > t.getRoot().getHeight()) {
+        while (joinNode.getHeight() > this.root.getHeight()) {
             joinNode = joinNode.getLeft();
         }
-        x.setLeft(t.getRoot());
         x.setRight(joinNode);
+        x.setLeft(t.getRoot());
         x.setParent(joinNode.getParent());
-        joinNode.getParent().setLeft(x);
-        joinNode.setParent(x);
         t.getRoot().setParent(x);
-        rebalanceTree(x.getParent());
-        if (this.getRoot().getHeight() - t.getRoot().getHeight() == 1) {
+
+
+        if (joinNode != this.getRoot()) {
+            joinNode.getParent().setLeft(x);
+            joinNode.setParent(x);
+            this.root = t.getRoot();
+            rebalanceTree(x.getParent());
+        } else {
             this.root = x;
         }
+
 
         this.size = this.size + t.size() + 1;
     }
 
-    private void joinLowKeyTreeWithHigherRank(IAVLNode x, AVLTree t) {
-        IAVLNode joinNode = t.getRoot();
-        while (joinNode.getHeight() > this.getRoot().getHeight()) {
-            joinNode = joinNode.getRight();
-        }
-        x.setLeft(joinNode);
-        x.setRight(this.getRoot());
-        x.setParent(joinNode.getParent());
-        joinNode.getParent().setRight(x);
-        joinNode.setParent(x);
-        this.getRoot().setParent(x);
-        this.root = t.getRoot();
-        rebalanceTree(x.getParent());
-        if (t.getRoot().getHeight() - this.getRoot().getHeight() == 1) {
-            this.root = x;
-
-        }
-        this.size = this.size + t.size() + 1;
-    }
 
     private void joinTreeWithEqualHeight(IAVLNode x, AVLTree t) {
         if (x.getKey() > this.getRoot().getKey()) {
