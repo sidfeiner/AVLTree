@@ -284,6 +284,7 @@ public class AVLTree {
             } else if (parent.getLeft() == node) {
                 // this is a left child
                 if (parent.getRight().isRealNode()) {
+                    logger.finest("joining bigger tree with sibling at right");
                     bigger.join(parent, new AVLTree(parent.getRight()));
                 }
             }
@@ -303,12 +304,13 @@ public class AVLTree {
     public AVLTree[] split(int x) {
         IAVLNode node = searchForNode(x);
         AVLTree smaller, bigger;
-        ;
         if (node == this.getRoot()) {
+            // recursive function stops at root, so in case we get the root, we split it here
             smaller = new AVLTree(node.getLeft());
             bigger = new AVLTree(node.getRight());
             return new AVLTree[]{smaller, bigger};
         } else {
+            // splitting node is not the root
             if (node.getRight().isRealNode()) {
                 bigger = new AVLTree(node.getRight());
             } else {
