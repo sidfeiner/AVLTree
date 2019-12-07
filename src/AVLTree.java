@@ -188,82 +188,6 @@ public class AVLTree {
         return rebalanceAfterDelete(nodeToDelete.getParent());
     }
 
-    private void deleteAfterSuccessorSwap(IAVLNode nodeToDelete) {
-        if (nodeToDelete.isLeaf()) {
-            deleteLeaf(nodeToDelete);
-        } else {
-            deleteUnaryNode(nodeToDelete);
-        }
-    }
-
-    private void deleteLeaf(IAVLNode node) {
-
-        if (node == this.root) {
-            logger.finest("Deleting leaf which is root from tree");
-            this.root = null;
-        } else {
-            logger.finest("Deleting leaf: " + node.getKey() + " from tree");
-            if (node.getParent().getRight() == node) { // Y is right child of parent
-                node.getParent().setRight(virtualNode);
-            } else {
-                node.getParent().setLeft(virtualNode);
-            }
-
-        }
-    }
-
-    private void deleteUnaryNode(IAVLNode node) {
-
-        if (node == this.root) {
-            logger.finest("Deleting unaryNode  which is root from tree");
-            if (node.getRight().isRealNode()) {
-                this.root = node.getRight();
-                this.root.setParent(null);
-            } else {
-                this.root = node.getLeft();
-                this.root.setParent(null);
-            }
-        } else {
-            IAVLNode parent = node.getParent();
-            logger.finest("Deleting unary node with key: " + node.getKey());
-            {
-                if (parent.getRight() == node) {
-                    if (node.getRight().isRealNode()) {
-                        parent.setRight(node.getRight());
-                        node.getRight().setParent(parent);
-                    } else {
-                        parent.setRight(virtualNode);
-                    }
-                } else {
-                    if (node.getLeft().isRealNode()) {
-                        parent.setLeft(node.getLeft());
-                        node.getLeft().setParent(parent);
-                    } else {
-                        parent.setLeft(virtualNode);
-                    }
-                }
-            }
-        }
-    }
-
-
-    private IAVLNode swapNodeWithSuccessor(IAVLNode node) {
-        logger.finest("Swapping node: " + node.getKey() + " with successor and deleting it");
-        IAVLNode successor = getSuccessor(node);
-        swapNode(node, successor);
-        return successor;
-    }
-
-    private void swapNode(IAVLNode node1, IAVLNode node2) {
-        int node1key = node1.getKey();
-        String node1value = node1.getValue();
-        node1.setKey(node2.getKey());
-        node1.setValue(node2.getValue());
-        node2.setKey(node1key);
-        node2.setValue(node1value);
-
-    }
-
 
     /**
      * public String min()
@@ -371,7 +295,134 @@ public class AVLTree {
      * postcondition: none
      */
     public int join(IAVLNode x, AVLTree t) {
-        return 0;
+        if (t.getRoot() != null && this.getRoot() != null) {
+            if (t.getRoot().getHeight() > this.getRoot().getHeight()) { //t is taller than this.tree
+                if (x.getKey() > this.getRoot().getKey()) {
+                    joinBigKeyTreeWithHigherRank(x, t);
+                } else {
+                    joinLowKeyTreeWithHigherRank(x, t);
+                }
+            } else {
+                if (t.getRoot().getHeight() < this.getRoot().getHeight()) {
+                    if (x.getKey() > this.getRoot().getKey()) {
+                        joinBigKeyTreeWithLowerRank(x, t);
+                    } else {
+                        joinLowKeyTreeWithLowerRank(x, t);
+                    }
+                } else { // equal height
+                    joinTreeWithEqualHeight(x, t);
+                }
+            }
+        } else {
+            if (this.getRoot() == null && t.getRoot() != null) {
+                t.insert(x.getKey(), x.getValue());
+                this.root = t.getRoot();
+            } else {
+                if (this.getRoot() != null && t.getRoot() == null) {
+                    this.insert(x.getKey(), x.getValue());
+                } else {
+                    return 1;
+                }
+            }
+        }
+
+        return Math.abs(this.getRoot().getHeight() - t.getRoot().getHeight()) + 1;
+    }
+
+
+    private void joinBigKeyTreeWithLowerRank(IAVLNode x, AVLTree t) {
+        IAVLNode joinNode = this.getRoot();
+        while (joinNode.getHeight() > t.getRoot().getHeight()) {
+            joinNode = joinNode.getRight();
+        }
+        x.setLeft(joinNode);
+        x.setRight(t.getRoot());
+        x.setParent(joinNode.getParent());
+        joinNode.getParent().setRight(x);
+        joinNode.setParent(x);
+        t.getRoot().setParent(x);
+        rebalanceTree(x.getParent());
+        if (this.getRoot().getHeight() - t.getRoot().getHeight() == 1) {
+            this.root = x;
+        }
+        this.size = this.size + t.size() + 1;
+    }
+
+    private void joinBigKeyTreeWithHigherRank(IAVLNode x, AVLTree t) {
+        IAVLNode joinNode = t.getRoot();
+        while (joinNode.getHeight() > this.getRoot().getHeight()) {
+            joinNode = joinNode.getLeft();
+        }
+        x.setLeft(this.getRoot());
+        x.setRight(joinNode);
+        x.setParent(joinNode.getParent());
+        joinNode.getParent().setLeft(x);
+        joinNode.setParent(x);
+        this.getRoot().setParent(x);
+        this.root = t.getRoot();
+        rebalanceTree(x.getParent());
+        if (t.getRoot().getHeight() - this.getRoot().getHeight() == 1) {
+            this.root = x;
+        }
+        this.size = this.size + t.size() + 1;
+    }
+
+    private void joinLowKeyTreeWithLowerRank(IAVLNode x, AVLTree t) {
+        IAVLNode joinNode = this.getRoot();
+        while (joinNode.getHeight() > t.getRoot().getHeight()) {
+            joinNode = joinNode.getLeft();
+        }
+        x.setLeft(t.getRoot());
+        x.setRight(joinNode);
+        x.setParent(joinNode.getParent());
+        joinNode.getParent().setLeft(x);
+        joinNode.setParent(x);
+        t.getRoot().setParent(x);
+        rebalanceTree(x.getParent());
+        if (this.getRoot().getHeight() - t.getRoot().getHeight() == 1) {
+            this.root = x;
+        }
+
+        this.size = this.size + t.size() + 1;
+    }
+
+    private void joinLowKeyTreeWithHigherRank(IAVLNode x, AVLTree t) {
+        IAVLNode joinNode = t.getRoot();
+        while (joinNode.getHeight() > this.getRoot().getHeight()) {
+            joinNode = joinNode.getRight();
+        }
+        x.setLeft(joinNode);
+        x.setRight(this.getRoot());
+        x.setParent(joinNode.getParent());
+        joinNode.getParent().setRight(x);
+        joinNode.setParent(x);
+        this.getRoot().setParent(x);
+        this.root = t.getRoot();
+        rebalanceTree(x.getParent());
+        if (t.getRoot().getHeight() - this.getRoot().getHeight() == 1) {
+            this.root = x;
+
+        }
+        this.size = this.size + t.size() + 1;
+    }
+
+    private void joinTreeWithEqualHeight(IAVLNode x, AVLTree t) {
+        if (x.getKey() > this.getRoot().getKey()) {
+            x.setRight(t.getRoot());
+            t.getRoot().setParent(x);
+            x.setLeft(this.getRoot());
+            this.getRoot().setParent(x);
+            this.root = x;
+            x.setParent(null);
+        } else {
+            x.setLeft(t.getRoot());
+            t.getRoot().setParent(x);
+            x.setRight(this.getRoot());
+            this.getRoot().setParent(x);
+            this.root = x;
+            x.setParent(null);
+        }
+        this.size = this.size + t.size() + 1;
     }
 
     /**
@@ -401,6 +452,7 @@ public class AVLTree {
         parent.setHeight(1 + Math.max(parent.getLeft().getHeight(), parent.getRight().getHeight()));
         node.setHeight(1 + Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
     }
+
 
     private void rotateRight(IAVLNode node) {
         IAVLNode parent = node.getParent();
@@ -562,6 +614,83 @@ public class AVLTree {
             logger.finest("Finished rebalancing before root");
         }
         return sum;
+    }
+
+    private void deleteAfterSuccessorSwap(IAVLNode nodeToDelete) {
+        if (nodeToDelete.isLeaf()) {
+            deleteLeaf(nodeToDelete);
+        } else {
+            deleteUnaryNode(nodeToDelete);
+        }
+    }
+
+    private void deleteLeaf(IAVLNode node) {
+
+        if (node == this.root) {
+            logger.finest("Deleting leaf which is root from tree");
+            this.root = null;
+        } else {
+            logger.finest("Deleting leaf: " + node.getKey() + " from tree");
+            if (node.getParent().getRight() == node) { // Y is right child of parent
+                node.getParent().setRight(virtualNode);
+            } else {
+                node.getParent().setLeft(virtualNode);
+            }
+
+        }
+        this.size--;
+    }
+
+    private void deleteUnaryNode(IAVLNode node) {
+
+        if (node == this.root) {
+            logger.finest("Deleting unaryNode  which is root from tree");
+            if (node.getRight().isRealNode()) {
+                this.root = node.getRight();
+                this.root.setParent(null);
+            } else {
+                this.root = node.getLeft();
+                this.root.setParent(null);
+            }
+        } else {
+            IAVLNode parent = node.getParent();
+            logger.finest("Deleting unary node with key: " + node.getKey());
+            {
+                if (parent.getRight() == node) {
+                    if (node.getRight().isRealNode()) {
+                        parent.setRight(node.getRight());
+                        node.getRight().setParent(parent);
+                    } else {
+                        parent.setRight(virtualNode);
+                    }
+                } else {
+                    if (node.getLeft().isRealNode()) {
+                        parent.setLeft(node.getLeft());
+                        node.getLeft().setParent(parent);
+                    } else {
+                        parent.setLeft(virtualNode);
+                    }
+                }
+            }
+        }
+        this.size--;
+    }
+
+    private IAVLNode swapNodeWithSuccessor(IAVLNode node) {
+        logger.finest("Swapping node: " + node.getKey() + " with successor and deleting it");
+        IAVLNode successor = getSuccessor(node);
+        swapNode(node, successor);
+        return successor;
+    }
+
+    private void swapNode(IAVLNode node1, IAVLNode node2) {
+        int node1key = node1.getKey();
+        String node1value = node1.getValue();
+        node1.setKey(node2.getKey());
+        node1.setValue(node2.getValue());
+        node2.setKey(node1key);
+        node2.setValue(node1value);
+
     }
 
     public interface IAVLNode {

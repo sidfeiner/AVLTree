@@ -10,7 +10,14 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        int[] keys = {13, 15, 2, 7, 9, 18, 11, 20};
+        AVLTree tree2 = new AVLTree();
+        AVLTree tree3 = new AVLTree();
+        tree3.insert(8,"8");
+
+        int[] keys = {1,2,3,4,5,6};
+
+        int[] keys2 = {10};
+
 
         for (int k : keys) {
             tree.insert(k, Integer.toString(k));
@@ -19,13 +26,29 @@ public class Test {
             System.out.println("------");
         }
 
+        for (int k : keys2) {
+            tree2.insert(k, Integer.toString(k));
+            BTreePrinter.printNode(tree2.getRoot());
+            Thread.sleep(200L);
+            System.out.println("------");
+        }
+
+
+        tree.join(tree3.getRoot(),tree2);
+        BTreePrinter.printNode(tree.getRoot());
+        Thread.sleep(200L);
+        System.out.println("------");
+
+        /*
         int[] delkeys = {7, 20, 9, 13, 15, 2, 11, 18};
         for (int k : delkeys) {
             tree.delete(k);
             BTreePrinter.printNode(tree.getRoot());
             Thread.sleep(200L);
             System.out.println("------");
-        }
+        }*/
+
+
     }
 
 
