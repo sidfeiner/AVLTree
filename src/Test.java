@@ -41,6 +41,21 @@ public class Test {
 
     }
 
+    public static void testSplit() {
+        AVLTree tree = new AVLTree();
+        int[] keys = {8,4,2,1,3,6,5,7,12,10,9,11,14,13,15};
+        for (int k: keys) {
+            tree.insert(k, Integer.toString(k));
+        }
+        BTreePrinter.printNode(tree.getRoot());
+
+        AVLTree[] res = tree.split(5);
+        System.out.println("smaller:");
+        BTreePrinter.printNode(res[0].getRoot());
+        System.out.println("bigger:");
+        BTreePrinter.printNode(res[1].getRoot());
+    }
+
 
     public static AVLTree testForSid() throws InterruptedException {
         AVLTree tree = new AVLTree();
@@ -96,7 +111,7 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        testForDango();
+        testSplit();
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();

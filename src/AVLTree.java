@@ -13,6 +13,14 @@ public class AVLTree {
     private int size;
     private IAVLNode virtualNode = new AVLNode(-1, "V", true);
 
+    public AVLTree(IAVLNode root) {
+        this.root = root;
+    }
+
+    public AVLTree() {
+
+    }
+
     /**
      * public boolean empty()
      * <p>
@@ -20,18 +28,6 @@ public class AVLTree {
      */
     public boolean empty() {
         return this.root == null;
-    }
-
-    private String searchRec(IAVLNode root, int k) {
-        if (k == root.getKey()) {
-            return root.getValue();
-        } else if (k < root.getKey()) {
-            if (root.getLeft() == null) return null;
-            return searchRec(root.getLeft(), k);
-        } else {
-            if (root.getRight() == null) return null;
-            return searchRec(root.getRight(), k);
-        }
     }
 
     private IAVLNode searchRecNode(IAVLNode root, int k) {
@@ -56,13 +52,13 @@ public class AVLTree {
      * otherwise, returns null
      */
     public String search(int k) {
-        return searchRec(this.root, k);
+        return searchRecNode(this.root, k).getValue();
     }
 
 
     public boolean insertRec(IAVLNode curNode, AVLNode insertNode) {
         if (insertNode.getKey() < curNode.getKey()) {
-            if (curNode.getLeft() == virtualNode) {
+            if (!curNode.getLeft().isRealNode()) {
                 curNode.setLeft(insertNode);
                 insertNode.setParent(curNode);
                 return true;
@@ -70,7 +66,7 @@ public class AVLTree {
                 return insertRec(curNode.getLeft(), insertNode);
             }
         } else if (insertNode.getKey() > curNode.getKey()) {
-            if (curNode.getRight() == virtualNode) {
+            if (!curNode.getRight().isRealNode()) {
                 curNode.setRight(insertNode);
                 insertNode.setParent(curNode);
                 return true;
@@ -215,10 +211,10 @@ public class AVLTree {
 
     private int[] keysToArray(IAVLNode node) {
         int[] left, right, finalArray;
-        if (node.getLeft() == virtualNode) left = new int[0];
+        if (!node.getLeft().isRealNode()) left = new int[0];
         else left = keysToArray(node.getLeft());
 
-        if (node.getRight() == virtualNode) right = new int[0];
+        if (!node.getRight().isRealNode()) right = new int[0];
         else right = keysToArray(node.getRight());
 
         finalArray = new int[left.length + right.length + 1];
@@ -274,6 +270,28 @@ public class AVLTree {
         return this.root;
     }
 
+    private void splitRecBottomUp(IAVLNode node, AVLTree smaller, AVLTree bigger) {
+        IAVLNode parent = node.getParent();
+        if (node == this.root) {
+            logger.finest("reached root.");
+        } else {
+            if (parent.getRight() == node) {
+                // this is a right child
+                if (parent.getLeft().isRealNode()) {
+                    logger.finest("joining smaller tree with sibling at left");
+                    smaller.join(parent, new AVLTree(parent.getLeft()));
+                }
+            } else if (parent.getLeft() == node) {
+                // this is a left child
+                if (parent.getRight().isRealNode()) {
+                    bigger.join(parent, new AVLTree(parent.getRight()));
+                }
+            }
+            splitRecBottomUp(parent, smaller, bigger);
+        }
+
+    }
+
     /**
      * public string split(int x)
      * <p>
@@ -283,7 +301,24 @@ public class AVLTree {
      * postcondition: none
      */
     public AVLTree[] split(int x) {
-        return null;
+        IAVLNode node = searchForNode(x);
+        AVLTree smaller, bigger;
+        ;
+        if (node == this.getRoot()) {
+            smaller = new AVLTree(node.getLeft());
+            bigger = new AVLTree(node.getRight());
+            return new AVLTree[]{smaller, bigger};
+        } else {
+            if (node.getRight().isRealNode()) {
+                bigger = new AVLTree(node.getRight());
+            } else {
+                bigger = new AVLTree();
+            }
+            smaller = new AVLTree();
+            AVLTree[] result = {smaller, bigger};
+            splitRecBottomUp(node, smaller, bigger);
+            return result;
+        }
     }
 
     /**
@@ -790,5 +825,5 @@ public class AVLTree {
     }
 
 }
-  
+
 
