@@ -13,8 +13,8 @@ public class Test {
         AVLTree tree2 = new AVLTree();
         AVLTree tree3 = new AVLTree();
 
-        int [] smallKey = {};
-        int [] bigKey = {};
+        int[] smallKey = {};
+        int[] bigKey = {};
 
         for (int k : smallKey) {
             tree.insert(k, Integer.toString(k));
@@ -24,7 +24,7 @@ public class Test {
             System.out.println("------");
         }
 
-        for (int k :bigKey) {
+        for (int k : bigKey) {
             tree2.insert(k, Integer.toString(k));
 
             Thread.sleep(200L);
@@ -34,17 +34,17 @@ public class Test {
 
         BTreePrinter.printNode(tree.getRoot());
         BTreePrinter.printNode(tree2.getRoot());
-        tree3.insert(5,"5");
+        tree3.insert(5, "5");
 
-        tree.join(tree3.getRoot(),tree2);
+        tree.join(tree3.getRoot(), tree2);
         BTreePrinter.printNode(tree.getRoot());
 
     }
 
     public static void testSplit() {
         AVLTree tree = new AVLTree();
-        int[] keys = {8,4,2,1,3,6,5,7,12,10,9,11,14,13,15};
-        for (int k: keys) {
+        int[] keys = {8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15};
+        for (int k : keys) {
             tree.insert(k, Integer.toString(k));
         }
         BTreePrinter.printNode(tree.getRoot());
@@ -94,7 +94,7 @@ public class Test {
         else if (node.getRight().getHeight() == -1) {
             boolean res = node.getLeft().getParent() == node;
             if (!res) System.out.println("node " + node.getValue() + "'s left child has wrong parent");
-            return res&& testParents(node.getLeft());
+            return res && testParents(node.getLeft());
         } else if (node.getLeft().getHeight() == -1) {
             boolean res = node.getRight().getParent() == node;
             if (!res) System.out.println("node " + node.getValue() + "'s right child has wrong parent");
