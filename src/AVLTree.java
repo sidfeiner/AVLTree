@@ -209,17 +209,17 @@ public class AVLTree {
         return node.getValue();
     }
 
-    private int[] keysToArray(IAVLNode node) {
-        int[] left, right, finalArray;
-        if (!node.getLeft().isRealNode()) left = new int[0];
-        else left = keysToArray(node.getLeft());
+    private IAVLNode[] nodesToArray(IAVLNode node) {
+        IAVLNode[] left, right, finalArray;
+        if (!node.getLeft().isRealNode()) left = new IAVLNode[0];
+        else left = nodesToArray(node.getLeft());
 
-        if (!node.getRight().isRealNode()) right = new int[0];
-        else right = keysToArray(node.getRight());
+        if (!node.getRight().isRealNode()) right = new IAVLNode[0];
+        else right = nodesToArray(node.getRight());
 
-        finalArray = new int[left.length + right.length + 1];
+        finalArray = new IAVLNode[left.length + right.length + 1];
         for (int i = 0; i < left.length; i++) finalArray[i] = left[i];
-        finalArray[left.length] = node.getKey();
+        finalArray[left.length] = node;
         for (int i = 0; i < right.length; i++) finalArray[i + left.length + 1] = right[i];
         return finalArray;
     }
@@ -231,7 +231,12 @@ public class AVLTree {
      * or an empty array if the tree is empty.
      */
     public int[] keysToArray() {
-        return keysToArray(this.root);
+        IAVLNode[] nodes = nodesToArray(this.root);
+        int[] keys = new int[nodes.length];
+        for (int i=0;i<nodes.length;i++) {
+            keys[i]=nodes[i].getKey();
+        }
+        return keys;
     }
 
     /**
@@ -242,8 +247,12 @@ public class AVLTree {
      * or an empty array if the tree is empty.
      */
     public String[] infoToArray() {
-        String[] arr = new String[42]; // to be replaced by student code
-        return arr;                    // to be replaced by student code
+        IAVLNode[] nodes = nodesToArray(this.root);
+        String[] keys = new String[nodes.length];
+        for (int i=0;i<nodes.length;i++) {
+            keys[i]=nodes[i].getValue();
+        }
+        return keys;
     }
 
     /**
