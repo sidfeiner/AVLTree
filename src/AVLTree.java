@@ -137,22 +137,14 @@ public class AVLTree {
     }
 
     public int increaseAncestorsSize(IAVLNode node, int increase) {
-        IAVLNode parent = node.getParent();
-        if (parent == null) return 0;
-        logger.fine("increasing size of node " + parent.getValue() + " by " + increase);
-        parent.setSize(parent.getSize() + increase);
-        return 1 + increaseAncestorsSize(parent, increase);
+        if (node == null) return 0;
+        logger.fine("increasing size of node " + node.getValue() + " by " + increase);
+        node.setSize(node.getSize() + increase);
+        return 1 + increaseAncestorsSize(node.getParent(), increase);
     }
 
     public int incrementAncestorsSize(IAVLNode node) {
         return increaseAncestorsSize(node, 1);
-    }
-
-    public int decreaseAncestorsSize(IAVLNode node) {
-        IAVLNode parent = node.getParent();
-        if (parent == null) return 0;
-        parent.setSize(parent.getSize() - 1);
-        return 1 + decreaseAncestorsSize(parent);
     }
 
     public int decrementAncestorsSize(IAVLNode node) {
@@ -182,7 +174,7 @@ public class AVLTree {
         boolean inserted = insertRec(this.root, node);
         if (!inserted) return -1;
         this.size++;
-        incrementAncestorsSize(node);
+        incrementAncestorsSize(node.getParent());
         int rebalanceOpsAmount = rebalanceTree(node);
         return rebalanceOpsAmount;
     }
