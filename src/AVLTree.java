@@ -181,6 +181,7 @@ public class AVLTree {
         }
         IAVLNode nodeToDelete = swapNodeWithSuccessor(node);
         deleteAfterSuccessorSwap(nodeToDelete);
+        this.size--;
         return rebalanceAfterDelete(nodeToDelete.getParent());
     }
 
@@ -687,7 +688,7 @@ public class AVLTree {
             }
 
         }
-        this.size--;
+
     }
 
     private void deleteUnaryNode(IAVLNode node) {
@@ -710,19 +711,21 @@ public class AVLTree {
                         parent.setRight(node.getRight());
                         node.getRight().setParent(parent);
                     } else {
-                        parent.setRight(virtualNode);
+                        parent.setRight(node.getLeft());
+                        node.getLeft().setParent(parent);
                     }
                 } else {
                     if (node.getLeft().isRealNode()) {
                         parent.setLeft(node.getLeft());
                         node.getLeft().setParent(parent);
                     } else {
-                        parent.setLeft(virtualNode);
+                        parent.setLeft(node.getRight());
+                        node.getRight().setParent(parent);
                     }
                 }
             }
         }
-        this.size--;
+
     }
 
     private IAVLNode swapNodeWithSuccessor(IAVLNode node) {
