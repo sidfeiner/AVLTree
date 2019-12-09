@@ -136,12 +136,16 @@ public class AVLTree {
         return 0;
     }
 
-    public int incrementAncestorsSize(IAVLNode node) {
+    public int increaseAncestorsSize(IAVLNode node, int increase) {
         IAVLNode parent = node.getParent();
         if (parent == null) return 0;
-        logger.fine("increasing size of node " + parent.getValue());
-        parent.setSize(parent.getSize() + 1);
-        return 1 + incrementAncestorsSize(parent);
+        logger.fine("increasing size of node " + parent.getValue() + " by " + increase);
+        parent.setSize(parent.getSize() + increase);
+        return 1 + increaseAncestorsSize(parent, increase);
+    }
+
+    public int incrementAncestorsSize(IAVLNode node) {
+        return increaseAncestorsSize(node, 1);
     }
 
     public int decreaseAncestorsSize(IAVLNode node) {
@@ -149,6 +153,13 @@ public class AVLTree {
         if (parent == null) return 0;
         parent.setSize(parent.getSize() - 1);
         return 1 + decreaseAncestorsSize(parent);
+    }
+
+    public int decrementAncestorsSize(IAVLNode node) {
+        return decreaseAncestorsSize(node, 1);
+    }
+    public int decreaseAncestorsSize(IAVLNode node, int decrease) {
+        return increaseAncestorsSize(node, -decrease);
     }
 
     /**
@@ -557,8 +568,8 @@ public class AVLTree {
         parent.setHeight(1 + Math.max(parent.getRight().getHeight(), parent.getLeft().getHeight()));
         node.setHeight(1 + Math.max(node.getRight().getHeight(), node.getLeft().getHeight()));
 
-        parent.setSize(parent.getLeft().getSize() + parent.getRight().getSize()+1);
-        node.setSize(node.getLeft().getSize() + node.getRight().getSize()+1);
+        parent.setSize(parent.getLeft().getSize() + parent.getRight().getSize() + 1);
+        node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
 
     }
 
