@@ -13,8 +13,8 @@ public class Test {
         AVLTree tree2 = new AVLTree();
         AVLTree tree3 = new AVLTree();
 
-        int [] smallKey = {};
-        int [] bigKey = {};
+        int[] smallKey = {};
+        int[] bigKey = {};
 
         for (int k : smallKey) {
             tree.insert(k, Integer.toString(k));
@@ -24,7 +24,7 @@ public class Test {
             System.out.println("------");
         }
 
-        for (int k :bigKey) {
+        for (int k : bigKey) {
             tree2.insert(k, Integer.toString(k));
 
             Thread.sleep(200L);
@@ -34,25 +34,26 @@ public class Test {
 
         BTreePrinter.printNode(tree.getRoot());
         BTreePrinter.printNode(tree2.getRoot());
-        tree3.insert(5,"5");
+        tree3.insert(5, "5");
 
-        tree.join(tree3.getRoot(),tree2);
+        tree.join(tree3.getRoot(), tree2);
         BTreePrinter.printNode(tree.getRoot());
 
     }
 
     public static void testSplit() {
         AVLTree tree = new AVLTree();
-        int[] keys = {8,4,2,1,3,6,5,7,12,10,9,11,14,13,15};
-        for (int k: keys) {
+        int[] keys = {8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15};
+        for (int k : keys) {
             tree.insert(k, Integer.toString(k));
+            testParents(tree.getRoot());
         }
         BTreePrinter.printNode(tree.getRoot());
 
         AVLTree[] res = tree.split(5);
-        System.out.println("smaller:");
+        System.out.println(String.format("smaller (size=%d):", res[0].size()));
         BTreePrinter.printNode(res[0].getRoot());
-        System.out.println("bigger:");
+        System.out.println(String.format("bigger (size=%d):", res[1].size()));
         BTreePrinter.printNode(res[1].getRoot());
     }
 
@@ -89,12 +90,21 @@ public class Test {
         return tree;
     }
 
+    public static boolean testParents() {
+        int[] keys = {8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15};
+        AVLTree tree = new AVLTree();
+        for(int k : keys ){
+            tree.insert(k, Integer.toString(k));
+        }
+        return testParents(tree.getRoot());
+    }
+
     public static boolean testParents(AVLTree.IAVLNode node) {
         if (node.getHeight() == 0) return true;
         else if (node.getRight().getHeight() == -1) {
             boolean res = node.getLeft().getParent() == node;
             if (!res) System.out.println("node " + node.getValue() + "'s left child has wrong parent");
-            return res&& testParents(node.getLeft());
+            return res && testParents(node.getLeft());
         } else if (node.getLeft().getHeight() == -1) {
             boolean res = node.getRight().getParent() == node;
             if (!res) System.out.println("node " + node.getValue() + "'s right child has wrong parent");
@@ -111,6 +121,7 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        //testParents();
         testSplit();
     }
 	/*public static void main(String[] args) {

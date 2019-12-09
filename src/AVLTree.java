@@ -15,6 +15,7 @@ public class AVLTree {
 
     public AVLTree(IAVLNode root) {
         this.root = root;
+        this.size = root.getSize();
     }
 
     public AVLTree() {
@@ -135,6 +136,21 @@ public class AVLTree {
         return 0;
     }
 
+    public int incrementAncestorsSize(IAVLNode node) {
+        IAVLNode parent = node.getParent();
+        if (parent == null) return 0;
+        logger.fine("increasing size of node " + parent.getValue());
+        parent.setSize(parent.getSize() + 1);
+        return 1 + incrementAncestorsSize(parent);
+    }
+
+    public int decreaseAncestorsSize(IAVLNode node) {
+        IAVLNode parent = node.getParent();
+        if (parent == null) return 0;
+        parent.setSize(parent.getSize() - 1);
+        return 1 + decreaseAncestorsSize(parent);
+    }
+
     /**
      * public int insert(int k, String i)
      * <p>
@@ -154,7 +170,9 @@ public class AVLTree {
         boolean inserted = insertRec(this.root, node);
         if (!inserted) return -1;
         this.size++;
-        return rebalanceTree(node);
+        incrementAncestorsSize(node);
+        int rebalanceOpsAmount = rebalanceTree(node);
+        return rebalanceOpsAmount;
     }
 
     /**
@@ -234,8 +252,8 @@ public class AVLTree {
     public int[] keysToArray() {
         IAVLNode[] nodes = nodesToArray(this.root);
         int[] keys = new int[nodes.length];
-        for (int i=0;i<nodes.length;i++) {
-            keys[i]=nodes[i].getKey();
+        for (int i = 0; i < nodes.length; i++) {
+            keys[i] = nodes[i].getKey();
         }
         return keys;
     }
@@ -250,8 +268,8 @@ public class AVLTree {
     public String[] infoToArray() {
         IAVLNode[] nodes = nodesToArray(this.root);
         String[] keys = new String[nodes.length];
-        for (int i=0;i<nodes.length;i++) {
-            keys[i]=nodes[i].getValue();
+        for (int i = 0; i < nodes.length; i++) {
+            keys[i] = nodes[i].getValue();
         }
         return keys;
     }
@@ -510,6 +528,9 @@ public class AVLTree {
 
         parent.setHeight(1 + Math.max(parent.getLeft().getHeight(), parent.getRight().getHeight()));
         node.setHeight(1 + Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
+
+        parent.setSize(parent.getLeft().getSize() + parent.getRight().getSize() + 1);
+        node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
     }
 
 
@@ -535,6 +556,9 @@ public class AVLTree {
 
         parent.setHeight(1 + Math.max(parent.getRight().getHeight(), parent.getLeft().getHeight()));
         node.setHeight(1 + Math.max(node.getRight().getHeight(), node.getLeft().getHeight()));
+
+        parent.setSize(parent.getLeft().getSize() + parent.getRight().getSize()+1);
+        node.setSize(node.getLeft().getSize() + node.getRight().getSize()+1);
 
     }
 
@@ -755,6 +779,11 @@ public class AVLTree {
     }
 
     public interface IAVLNode {
+
+        public int getSize(); //returns amount of nodes under current node
+
+        public void setSize(int size); //returns amount of nodes under current node
+
         public int getKey(); //returns node's key (for virtuval node return -1)
 
         public String getValue(); //returns node's value [info] (for virtuval node return null)
@@ -797,7 +826,7 @@ public class AVLTree {
      */
     public class AVLNode implements IAVLNode {
 
-        int key, height;
+        int key, height, size;
         String info;
         IAVLNode left, right, parent;
 
@@ -811,11 +840,22 @@ public class AVLTree {
             this.info = info;
             if (isVirtual) {
                 height = -1;
+                size = 0;
             } else {
                 height = 0;
+                this.size = 1;
             }
             this.left = virtualNode;
             this.right = virtualNode;
+        }
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
         }
 
         public int getKey() {
