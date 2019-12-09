@@ -57,7 +57,7 @@ public class AVLTree {
     }
 
 
-    public boolean insertRec(IAVLNode curNode, AVLNode insertNode) {
+    private boolean insertRec(IAVLNode curNode, AVLNode insertNode) {
         if (insertNode.getKey() < curNode.getKey()) {
             if (!curNode.getLeft().isRealNode()) {
                 curNode.setLeft(insertNode);
@@ -158,6 +158,7 @@ public class AVLTree {
     public int decrementAncestorsSize(IAVLNode node) {
         return decreaseAncestorsSize(node, 1);
     }
+
     public int decreaseAncestorsSize(IAVLNode node, int decrease) {
         return increaseAncestorsSize(node, -decrease);
     }
@@ -196,21 +197,25 @@ public class AVLTree {
      */
     public int delete(int k) {
         IAVLNode node = searchForNode(k);
+        int totalOperations;
         if (node == null) {
             return -1;
         }
+        IAVLNode parent = node.getParent();
         if (node.isLeaf()) {
-            IAVLNode parent = node.getParent();
             deleteLeaf(node);
+            decrementAncestorsSize(parent);
             return (rebalanceAfterDelete(parent));
         }
         if (node.isUnaryNode()) {
             deleteUnaryNode(node);
+            decrementAncestorsSize(parent);
             return (rebalanceAfterDelete(node.getParent()));
         }
         IAVLNode nodeToDelete = swapNodeWithSuccessor(node);
         deleteAfterSuccessorSwap(nodeToDelete);
         this.size--;
+        decrementAncestorsSize(nodeToDelete.getParent());
         return rebalanceAfterDelete(nodeToDelete.getParent());
     }
 
@@ -318,13 +323,16 @@ public class AVLTree {
                 // this is a right child
                 if (parent.getLeft().isRealNode()) {
                     logger.finest("joining smaller tree with sibling at left");
-                    smaller.join(parent, new AVLTree(parent.getLeft()));
+                    IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
+                    smaller.join(copyNode, new AVLTree(parent.getLeft()));
                 }
             } else if (parent.getLeft() == node) {
                 // this is a left child
                 if (parent.getRight().isRealNode()) {
                     logger.finest("joining bigger tree with sibling at right");
-                    bigger.join(parent, new AVLTree(parent.getRight()));
+                    AVLTree rightTree = new AVLTree(parent.getRight());
+                    IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
+                    bigger.join(copyNode, rightTree);
                 }
             }
             splitRecBottomUp(parent, smaller, bigger);
@@ -387,6 +395,7 @@ public class AVLTree {
                 if (this.getRoot() == null && t.getRoot() != null) {
                     t.insert(x.getKey(), x.getValue());
                     this.root = t.getRoot();
+                    this.size = t.size();
                     return t.getRoot().getHeight() + 1;
                 } else {
                     if (this.getRoot() != null && t.getRoot() == null) {
@@ -419,11 +428,13 @@ public class AVLTree {
             IAVLNode parent = joinNode.getParent();
             joinNode.setParent(x);
             x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+            x.setSize(this.getRoot().getSize() + joinNode.getSize() + 1);
             if (joinNode == t.getRoot()) {
                 this.root = x;
             } else {
                 this.root = t.getRoot();
                 parent.setLeft(x);
+                increaseAncestorsSize(parent, 1 + t.getRoot().getSize());
                 rebalanceTree(x);
             }
         } else {
@@ -438,10 +449,12 @@ public class AVLTree {
             IAVLNode parent = joinNode.getParent();
             joinNode.setParent(x);
             x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+            x.setSize(t.getRoot().getSize() + joinNode.getSize() + 1);
             if (joinNode == this.getRoot()) {
                 this.root = x;
             } else {
                 parent.setRight(x);
+                increaseAncestorsSize(parent, 1 + this.getRoot().getSize());
                 rebalanceTree(x);
             }
 
@@ -462,11 +475,13 @@ public class AVLTree {
             IAVLNode parent = joinNode.getParent();
             joinNode.setParent(x);
             x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+            x.setSize(this.getRoot().getSize() + joinNode.getSize() + 1);
             if (joinNode == this.getRoot()) {
                 this.root = x;
             } else {
                 this.root = t.getRoot();
                 parent.setRight(x);
+                increaseAncestorsSize(parent, 1 + this.getRoot().getSize());
                 rebalanceTree(x);
             }
         } else {
@@ -481,18 +496,17 @@ public class AVLTree {
             IAVLNode parent = joinNode.getParent();
             joinNode.setParent(x);
             x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+            x.setSize(t.getRoot().getSize() + joinNode.getSize() + 1);
             if (joinNode == t.getRoot()) {
                 this.root = x;
             } else {
                 parent.setLeft(x);
+                increaseAncestorsSize(parent, 1 + t.getRoot().getSize());
                 rebalanceTree(x);
             }
         }
-
-
         this.size = this.size + t.size() + 1;
     }
-
 
     private void joinTreeWithEqualHeight(IAVLNode x, AVLTree t) {
         if (x.getKey() > this.getRoot().getKey()) {
@@ -502,6 +516,7 @@ public class AVLTree {
             this.getRoot().setParent(x);
             this.root = x;
             x.setParent(null);
+
         } else {
             x.setLeft(t.getRoot());
             t.getRoot().setParent(x);
@@ -510,6 +525,7 @@ public class AVLTree {
             this.root = x;
             x.setParent(null);
         }
+        x.setSize(x.getLeft().getSize() + x.getRight().getSize());
         this.size = this.size + t.size() + 1;
     }
 
@@ -544,7 +560,6 @@ public class AVLTree {
         node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
     }
 
-
     private void rotateRight(IAVLNode node) {
         IAVLNode parent = node.getParent();
         IAVLNode grandParent = parent.getParent();
@@ -570,35 +585,6 @@ public class AVLTree {
 
         parent.setSize(parent.getLeft().getSize() + parent.getRight().getSize() + 1);
         node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
-
-    }
-
-    private IAVLNode treePosition(int k) {
-        IAVLNode x = root;
-        IAVLNode y = null;
-        while (x != null) {
-            y = x;
-            if (k == x.getKey()) {
-                return y;
-            } else {
-                if (k < x.getKey()) {
-                    x = x.getLeft();
-                } else {
-                    x = x.getRight();
-                }
-            }
-        }
-        return y;
-    }
-
-    private void treeInsert(int k, IAVLNode z) {
-        IAVLNode y = treePosition(k);
-        z.setParent(y);
-        if (z.getKey() < y.getKey()) {
-            y.setLeft(z);
-        } else {
-            y.setRight(z);
-        }
 
     }
 
@@ -732,6 +718,7 @@ public class AVLTree {
             }
 
         }
+        this.size--;
 
     }
 
@@ -769,6 +756,7 @@ public class AVLTree {
                 }
             }
         }
+        this.size--;
 
     }
 
@@ -782,10 +770,13 @@ public class AVLTree {
     private void swapNode(IAVLNode node1, IAVLNode node2) {
         int node1key = node1.getKey();
         String node1value = node1.getValue();
+        int node1Size = node1.getSize();
         node1.setKey(node2.getKey());
         node1.setValue(node2.getValue());
+        node1.setSize(node1Size);
         node2.setKey(node1key);
         node2.setValue(node1value);
+        node2.setSize(node1Size);
 
     }
 
@@ -843,10 +834,14 @@ public class AVLTree {
 
 
         public AVLNode(int key, String info) {
-            this(key, info, false);
+            this(key, info, false, 1);
         }
 
         public AVLNode(int key, String info, boolean isVirtual) {
+            this(key, info, isVirtual, 1);
+        }
+
+        public AVLNode(int key, String info, boolean isVirtual, int size) {
             this.key = key;
             this.info = info;
             if (isVirtual) {
@@ -854,7 +849,7 @@ public class AVLTree {
                 size = 0;
             } else {
                 height = 0;
-                this.size = 1;
+                this.size = size;
             }
             this.left = virtualNode;
             this.right = virtualNode;

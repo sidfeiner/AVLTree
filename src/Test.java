@@ -13,8 +13,8 @@ public class Test {
         AVLTree tree2 = new AVLTree();
         AVLTree tree3 = new AVLTree();
 
-        int[] smallKey = {};
-        int[] bigKey = {};
+        int[] smallKey = {1,2,3,4,5};
+        int[] bigKey = {7,8,9,10};
 
         for (int k : smallKey) {
             tree.insert(k, Integer.toString(k));
@@ -34,7 +34,7 @@ public class Test {
 
         BTreePrinter.printNode(tree.getRoot());
         BTreePrinter.printNode(tree2.getRoot());
-        tree3.insert(5, "5");
+        tree3.insert(6, "6");
 
         tree.join(tree3.getRoot(), tree2);
         BTreePrinter.printNode(tree.getRoot());
