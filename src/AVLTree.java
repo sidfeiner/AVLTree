@@ -629,8 +629,8 @@ public class AVLTree {
             }
             if (rankDifferenceRight(parent) == 1 && rankDifferenceLeft(parent) == 3 && rankDifferenceLeft(parent.getRight()) == 1 && rankDifferenceRight(parent.getRight()) == 1) {
                 logger.finest("We have 3-1, 1-1 case");
-                logger.finest("Performing left rotation on: " + parent.getRight() + " demoting: " + parent.getKey());
-                parent.setHeight(parent.getHeight() - 1);
+                logger.finest("Performing left rotation on: " + parent.getRight().getKey() + " demoting: " + parent.getKey());
+                rotateLeft(parent.getRight());
                 if (parent.getParent() != null) {
                     logger.finest("Promoting: " + parent.getParent().getKey());
                     sum += 1;
@@ -639,7 +639,7 @@ public class AVLTree {
             }
             if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 1 && rankDifferenceRight(parent.getLeft()) == 1) {
                 logger.finest("We have 1-3, 1-1 case");
-                logger.finest("Performing right rotation on: " + parent.getLeft() + " demoting: " + parent.getKey());
+                logger.finest("Performing right rotation on: " + parent.getLeft().getKey() + " demoting: " + parent.getKey());
                 rotateRight(parent.getLeft());
                 if (parent.getParent() != null) {
                     logger.finest("Promoting: " + parent.getParent().getKey());

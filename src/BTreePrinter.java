@@ -24,7 +24,7 @@ class BTreePrinter {
         List<AVLTree.IAVLNode> newNodes = new ArrayList<AVLTree.IAVLNode>();
         for (AVLTree.IAVLNode node : nodes) {
             if (node != null) {
-                System.out.print(node.getHeight());
+                System.out.print(node.getValue());
                 newNodes.add(node.getLeft());
                 newNodes.add(node.getRight());
             } else {

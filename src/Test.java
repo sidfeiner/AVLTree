@@ -10,19 +10,16 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
+        int[] keys = {20, 15, 30, 10, 17, 40, 16, 18};
 
-        for(int i=1;i<=50;i++){
-            tree.insert(i,Integer.toString(i));
+        for (int i = 1; i <= 300;i++) {
+            tree.insert(i, Integer.toString(i));
         }
 
-        BTreePrinter.printNode(tree.getRoot());
-        for(int i=1;i<=20;i++){
+
+        for (int i = 1; i <= 300;i++) {
             tree.delete(i);
         }
-
-
-
-        BTreePrinter.printNode(tree.getRoot());
     }
 
     public static void testSplit() {
