@@ -549,9 +549,8 @@ public class AVLTree {
         parent.setHeight(1 + Math.max(parent.getLeft().getHeight(), parent.getRight().getHeight()));
         node.setHeight(1 + Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
 
-
-        node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
         parent.setSize(parent.getLeft().getSize() + parent.getRight().getSize() + 1);
+        node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
     }
 
     private void rotateRight(IAVLNode node) {
