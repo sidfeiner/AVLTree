@@ -236,19 +236,21 @@ public class AVLTree {
         return node.getValue();
     }
 
+    private void nodesToArrayRec(IAVLNode node, IAVLNode[] nodes, int offset) {
+        if (node.getLeft().isRealNode()) {
+            nodesToArrayRec(node.getLeft(), nodes, offset);
+        }
+        int relIndex = node.getLeft().getSize();
+        nodes[offset + relIndex] = node;
+        if (node.getRight().isRealNode()) {
+            nodesToArrayRec(node.getRight(), nodes, offset + relIndex + 1);
+        }
+    }
+
     private IAVLNode[] nodesToArray(IAVLNode node) {
-        IAVLNode[] left, right, finalArray;
-        if (!node.getLeft().isRealNode()) left = new IAVLNode[0];
-        else left = nodesToArray(node.getLeft());
-
-        if (!node.getRight().isRealNode()) right = new IAVLNode[0];
-        else right = nodesToArray(node.getRight());
-
-        finalArray = new IAVLNode[left.length + right.length + 1];
-        for (int i = 0; i < left.length; i++) finalArray[i] = left[i];
-        finalArray[left.length] = node;
-        for (int i = 0; i < right.length; i++) finalArray[i + left.length + 1] = right[i];
-        return finalArray;
+        IAVLNode[] nodes = new IAVLNode[node.getSize()];
+        nodesToArrayRec(node, nodes, 0);
+        return nodes;
     }
 
     /**
