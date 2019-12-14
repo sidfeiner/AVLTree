@@ -575,11 +575,12 @@ public class AVLTree {
         }
 
 
-        node.setHeight(1 + Math.max(node.getRight().getHeight(), node.getLeft().getHeight()));
-        parent.setHeight(1 + Math.max(parent.getRight().getHeight(), parent.getLeft().getHeight()));
 
-        node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
+        parent.setHeight(1 + Math.max(parent.getRight().getHeight(), parent.getLeft().getHeight()));
+        node.setHeight(1 + Math.max(node.getRight().getHeight(), node.getLeft().getHeight()));
+
         parent.setSize(parent.getLeft().getSize() + parent.getRight().getSize() + 1);
+        node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
     }
 
     private IAVLNode getSuccessor(IAVLNode node) {

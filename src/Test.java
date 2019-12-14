@@ -10,35 +10,19 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        AVLTree tree2 = new AVLTree();
-        AVLTree tree3 = new AVLTree();
 
-        int[] smallKey = {1,2,3,4,5};
-        int[] bigKey = {7,8,9,10};
-
-        for (int k : smallKey) {
-            tree.insert(k, Integer.toString(k));
-
-            Thread.sleep(200L);
-
-            System.out.println("------");
-        }
-
-        for (int k : bigKey) {
-            tree2.insert(k, Integer.toString(k));
-
-            Thread.sleep(200L);
-
-            System.out.println("------");
+        for(int i=1;i<=50;i++){
+            tree.insert(i,Integer.toString(i));
         }
 
         BTreePrinter.printNode(tree.getRoot());
-        BTreePrinter.printNode(tree2.getRoot());
-        tree3.insert(6, "6");
+        for(int i=1;i<=20;i++){
+            tree.delete(i);
+        }
 
-        tree.join(tree3.getRoot(), tree2);
+
+
         BTreePrinter.printNode(tree.getRoot());
-
     }
 
     public static void testSplit() {
@@ -122,7 +106,7 @@ public class Test {
 
     public static void main(String[] args) throws InterruptedException {
         //testParents();
-        testSplit();
+        testForDango();
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();
