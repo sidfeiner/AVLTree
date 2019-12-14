@@ -5,12 +5,16 @@ import java.util.List;
 class BTreePrinter {
 
     public static void printNode(AVLTree.IAVLNode root) {
-        int maxLevel = BTreePrinter.maxLevel(root);
-
-        printNodeInternal(Collections.singletonList(root), 1, maxLevel);
+        printNode(root, false);
     }
 
-    private static void printNodeInternal(List<AVLTree.IAVLNode> nodes, int level, int maxLevel) {
+    public static void printNode(AVLTree.IAVLNode root, boolean printHeight) {
+        int maxLevel = BTreePrinter.maxLevel(root);
+
+        printNodeInternal(Collections.singletonList(root), 1, maxLevel, printHeight);
+    }
+
+    private static void printNodeInternal(List<AVLTree.IAVLNode> nodes, int level, int maxLevel, boolean printHeight) {
         if (nodes.isEmpty() || BTreePrinter.isAllElementsNull(nodes))
             return;
 
@@ -24,7 +28,8 @@ class BTreePrinter {
         List<AVLTree.IAVLNode> newNodes = new ArrayList<AVLTree.IAVLNode>();
         for (AVLTree.IAVLNode node : nodes) {
             if (node != null) {
-                System.out.print(node.getHeight());
+                int valToPrint = printHeight ? node.getHeight() : node.getKey();
+                System.out.print(valToPrint);
                 newNodes.add(node.getLeft());
                 newNodes.add(node.getRight());
             } else {
@@ -63,7 +68,7 @@ class BTreePrinter {
             System.out.println("");
         }
 
-        printNodeInternal(newNodes, level + 1, maxLevel);
+        printNodeInternal(newNodes, level + 1, maxLevel, printHeight);
     }
 
     private static void printWhitespaces(int count) {

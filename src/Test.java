@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,15 +12,14 @@ public class Test {
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
 
-        for(int i=1;i<=50;i++){
-            tree.insert(i,Integer.toString(i));
+        for (int i = 1; i <= 50; i++) {
+            tree.insert(i, Integer.toString(i));
         }
 
         BTreePrinter.printNode(tree.getRoot());
-        for(int i=1;i<=20;i++){
+        for (int i = 1; i <= 20; i++) {
             tree.delete(i);
         }
-
 
 
         BTreePrinter.printNode(tree.getRoot());
@@ -77,7 +77,7 @@ public class Test {
     public static boolean testParents() {
         int[] keys = {8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15};
         AVLTree tree = new AVLTree();
-        for(int k : keys ){
+        for (int k : keys) {
             tree.insert(k, Integer.toString(k));
         }
         return testParents(tree.getRoot());
@@ -104,9 +104,95 @@ public class Test {
         return res;
     }
 
+    private static boolean testTreeToArray(AVLTree tree) {
+        int[] keys = tree.keysToArray();
+        int[] sortedKeys = keys.clone();
+        Arrays.sort(sortedKeys);
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i] != sortedKeys[i]) return false;
+        }
+        return true;
+    }
+
+    public static boolean testTreeToArray() {
+        int[] keys = {8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15};
+        AVLTree tree = new AVLTree();
+        for (int k : keys) {
+            tree.insert(k, Integer.toString(k));
+        }
+        return testTreeToArray(tree);
+    }
+
+    public static boolean testTreeSize() {
+        int[] keys = {8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15};
+        AVLTree tree = new AVLTree();
+        for (int k : keys) {
+            tree.insert(k, Integer.toString(k));
+        }
+        return testTreeSize(tree);
+    }
+
+    public static boolean testTreeSize(AVLTree tree) {
+        boolean res = testSizes(tree.getRoot());
+        return res && tree.getRoot().getSize() == tree.size();
+    }
+
+    public static boolean testSizes(AVLTree.IAVLNode node) {
+        if (!node.isRealNode()) return true;
+        return node.getSize() == node.getLeft().getSize() + node.getRight().getSize()
+                && testSizes(node.getLeft())
+                && testSizes(node.getRight());
+    }
+
+    public static AVLTree testInsert() throws InterruptedException {
+        AVLTree tree = new AVLTree();
+        //int[] keys = {8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15};
+        int[] keys = new int[50];
+        for (int i = 1; i <= 50; i++) keys[i - 1] = i;
+
+        for (int k : keys) {
+            tree.insert(k, Integer.toString(k));
+            BTreePrinter.printNode(tree.getRoot());
+            Thread.sleep(200L);
+            if (!testParents(tree.getRoot())) {
+                System.out.println("error with parents after inserting " + k);
+            }
+            System.out.println("------");
+        }
+        return tree;
+    }
+
+    public static boolean testHeights(AVLTree.IAVLNode node) {
+        if (!node.isRealNode()) return true;
+        return node.getHeight() == 1 + Math.max(node.getLeft().getHeight(), node.getRight().getHeight())
+                && testHeights(node.getLeft()) && testHeights(node.getRight());
+    }
+
     public static void main(String[] args) throws InterruptedException {
-        //testParents();
-        testForDango();
+        AVLTree tree = testInsert();
+        System.out.println("testing sizes...");
+        if (!testTreeSize(tree)) {
+            System.out.println("tree sizes are wrong");
+        }
+        System.out.println("testing treeToArray...");
+        if (!testTreeToArray(tree)) {
+            System.out.println("tree to array is wrong");
+        }
+
+        System.out.println("testing parents...");
+        if (!testParents(tree.getRoot())) {
+            System.out.println("parents are wrong");
+        }
+        ;
+        System.out.println("testing heights before delete...");
+        BTreePrinter.printNode(tree.getRoot(), true);
+        if (!testHeights(tree.getRoot())) {
+            System.out.println("heights in tree are wrong");
+        }
+
+
+        System.out.println("testing split, make sure from the prints that the trees are correct and that their SIZES are correct as well");
+        testSplit();
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();
