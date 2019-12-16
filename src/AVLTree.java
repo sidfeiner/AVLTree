@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -310,7 +312,7 @@ public class AVLTree {
         return this.root;
     }
 
-    private void splitRecBottomUp(IAVLNode node, AVLTree smaller, AVLTree bigger) {
+    private void splitRecBottomUp(IAVLNode node, AVLTree smaller, AVLTree bigger, List<Integer> complexities) {
         IAVLNode parent = node.getParent();
         if (node == this.root) {
             logger.finest("reached root.");
@@ -320,7 +322,7 @@ public class AVLTree {
                 if (parent.getLeft().isRealNode()) {
                     logger.finest("joining smaller tree with sibling at left");
                     IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
-                    smaller.join(copyNode, new AVLTree(parent.getLeft()));
+                    complexities.add(smaller.join(copyNode, new AVLTree(parent.getLeft())));
                 }
             } else if (parent.getLeft() == node) {
                 // this is a left child
@@ -328,12 +330,32 @@ public class AVLTree {
                     logger.finest("joining bigger tree with sibling at right");
                     AVLTree rightTree = new AVLTree(parent.getRight());
                     IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
-                    bigger.join(copyNode, rightTree);
+                    complexities.add(bigger.join(copyNode, rightTree));
                 }
             }
-            splitRecBottomUp(parent, smaller, bigger);
+            splitRecBottomUp(parent, smaller, bigger, complexities);
         }
 
+    }
+
+    public List<Integer> splitAnalysis(int x) {
+        IAVLNode node = searchForNode(x);
+        AVLTree smaller, bigger;
+        if (node == this.getRoot()) {
+            return new ArrayList<>();
+        } else {
+            // splitting node is not the root
+            if (node.getRight().isRealNode()) {
+                bigger = new AVLTree(node.getRight());
+            } else {
+                bigger = new AVLTree();
+            }
+            smaller = new AVLTree();
+            AVLTree[] result = {smaller, bigger};
+            List<Integer> complexities = new ArrayList<>();
+            splitRecBottomUp(node, smaller, bigger, complexities);
+            return complexities;
+        }
     }
 
     /**
@@ -361,7 +383,7 @@ public class AVLTree {
             }
             smaller = new AVLTree();
             AVLTree[] result = {smaller, bigger};
-            splitRecBottomUp(node, smaller, bigger);
+            splitRecBottomUp(node, smaller, bigger, new ArrayList<>());
             return result;
         }
     }
@@ -430,7 +452,11 @@ public class AVLTree {
             } else {
                 this.root = t.getRoot();
                 parent.setLeft(x);
-                increaseAncestorsSize(parent, 1 + t.getRoot().getSize());
+                try {
+                    increaseAncestorsSize(parent, 1 + t.getRoot().getSize());
+                } catch (StackOverflowError ex) {
+                    System.out.println("blabla");
+                }
                 rebalanceTree(x);
             }
         } else {
@@ -450,7 +476,11 @@ public class AVLTree {
                 this.root = x;
             } else {
                 parent.setRight(x);
-                increaseAncestorsSize(parent, 1 + this.getRoot().getSize());
+                try {
+                    increaseAncestorsSize(parent, 1 + this.getRoot().getSize());
+                } catch (StackOverflowError ex) {
+                    System.out.println("blabla");
+                }
                 rebalanceTree(x);
             }
 
@@ -477,7 +507,11 @@ public class AVLTree {
             } else {
                 this.root = t.getRoot();
                 parent.setRight(x);
-                increaseAncestorsSize(parent, 1 + this.getRoot().getSize());
+                try {
+                    increaseAncestorsSize(parent, 1 + this.getRoot().getSize());
+                } catch (StackOverflowError ex){
+                    System.out.println("blabla");
+                }
                 rebalanceTree(x);
             }
         } else {
@@ -497,7 +531,11 @@ public class AVLTree {
                 this.root = x;
             } else {
                 parent.setLeft(x);
-                increaseAncestorsSize(parent, 1 + t.getRoot().getSize());
+                try {
+                    increaseAncestorsSize(parent, 1 + t.getRoot().getSize());
+                } catch (StackOverflowError ex) {
+                    System.out.println("blabla");
+                }
                 rebalanceTree(x);
             }
         }
