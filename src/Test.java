@@ -139,7 +139,7 @@ public class Test {
 
     public static boolean testSizes(AVLTree.IAVLNode node) {
         if (!node.isRealNode()) return true;
-        return node.getSize() == node.getLeft().getSize() + node.getRight().getSize()
+        return node.getSize() == node.getLeft().getSize() + node.getRight().getSize() + 1
                 && testSizes(node.getLeft())
                 && testSizes(node.getRight());
     }

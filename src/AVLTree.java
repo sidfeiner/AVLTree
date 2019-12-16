@@ -621,6 +621,7 @@ public class AVLTree {
     private int rebalanceAfterDelete(IAVLNode parent) {
         int sum = 0;
         while (parent != null && !isRankDifferenceLegal(parent)) {
+            IAVLNode originalParent = parent.getParent();
             if (rankDifferenceRight(parent) == 2 && rankDifferenceLeft(parent) == 2) {
                 logger.finest("We have 2-2 case");
                 logger.finest("Demoting parent: " + parent.getKey());
@@ -676,7 +677,7 @@ public class AVLTree {
                 rotateRight(parent.getLeft());
                 sum += 2;
             }
-            parent = parent.getParent();
+            parent = originalParent;
         }
         if (parent == null) {
             logger.finest("Reached root, Finished rebalancing");
@@ -890,7 +891,7 @@ public class AVLTree {
 
         // Returns True if this is a non-virtual AVL node
         public boolean isRealNode() {
-            return (getHeight() != -1);
+            return getHeight() != -1;
         }
 
         public void setHeight(int height) {
