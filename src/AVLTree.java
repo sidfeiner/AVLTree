@@ -107,6 +107,8 @@ public class AVLTree {
             return 1 + rebalanceTree(parent);
         } else if (leftRankDiff + rightRankDiff == 2 && leftRankDiff != 1) {
             // case of 2-0 or 0-2 or 1-3+ or 3+-1
+
+            int ops = 1;
             if (rightRankDiff == 0) {
                 // 2-0
                 logger.finest("we have 2-0 case, rotating left");
@@ -115,6 +117,7 @@ public class AVLTree {
                     logger.finest("double rotating needed, first rotate with left child (right-rotate)");
                     IAVLNode left = node.getLeft();
                     rotateRight(left);
+                    ops += 1;
                     node = left;
                 }
                 rotateLeft(node);
@@ -126,11 +129,12 @@ public class AVLTree {
                     logger.finest("double rotating needed, first rotate with right child (left-rotate)");
                     IAVLNode right = node.getRight();
                     rotateLeft(right);
+                    ops += 1;
                     node = right;
                 }
                 rotateRight(node);
             }
-            return 1 + rebalanceTree(parent);
+            return ops + rebalanceTree(parent);
         }
         logger.finest("done rebalancing at node " + node.getValue());
         return 0;
@@ -575,7 +579,6 @@ public class AVLTree {
         }
 
 
-
         parent.setHeight(1 + Math.max(parent.getRight().getHeight(), parent.getLeft().getHeight()));
         node.setHeight(1 + Math.max(node.getRight().getHeight(), node.getLeft().getHeight()));
 
@@ -593,8 +596,8 @@ public class AVLTree {
             }
             return y;
         } else {
-                parent = y.getParent();
-            while (parent!= null && parent.getRight() == y) {
+            parent = y.getParent();
+            while (parent != null && parent.getRight() == y) {
                 y = parent;
                 parent = parent.getParent();
             }
