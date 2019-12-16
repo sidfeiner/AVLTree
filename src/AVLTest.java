@@ -144,9 +144,6 @@ class AVLTest {
                 } else {
                     System.out.println("inserting " + x);
                     tree.insert(x, Integer.toString(x));
-                    if (tree.virtualNode.getParent() != null) {
-                        System.out.println("WTF");
-                    }
                 }
             }
         }
