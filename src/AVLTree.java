@@ -521,7 +521,7 @@ public class AVLTree {
             this.root = x;
             x.setParent(null);
         }
-        x.setSize(x.getLeft().getSize() + x.getRight().getSize());
+        x.setSize(x.getLeft().getSize() + x.getRight().getSize()+1);
         this.size = this.size + t.size() + 1;
     }
 
