@@ -65,18 +65,6 @@ class AVLTest {
 		assert(tree.insert(2, "2") == 1) : "unexpected insert value";
 		// RR
 		assert(tree.insert(3, "3") == 3) : "unexpected insert value";
-
-		int[] values = randomArray(30000, 0, 100);
-		tree = arrayToTree(values);
-		List<Integer> valuesShuffled = Arrays.stream(values).boxed().collect(Collectors.toList());
-		Collections.shuffle(valuesShuffled);
-		for (int x : valuesShuffled)
-		{
-
-			tree.insert(x,Integer.toString(x));
-
-		}
-
 		System.out.println("testInsert Passed!");
 	}
 
@@ -96,12 +84,10 @@ class AVLTest {
 		tree.insert(3, "3");
 		tree.insert(4, "4");
 
-
-
 		// should be RR rotation
 		assert(tree.delete(1) == 3) : "unexpected delete value";
 
-		int[] values = randomArray(10000, 0, 100);
+		int[] values = randomArray(10, 0, 100);
 		tree = arrayToTree(values);
 		List<Integer> valuesShuffled = Arrays.stream(values).boxed().collect(Collectors.toList());
 		Collections.shuffle(valuesShuffled);
@@ -121,7 +107,7 @@ class AVLTest {
 
 		for (int tries = 0; tries < 50; tries++)
 		{
-			int[] values = randomArray(35000, 0, 100);
+			int[] values = randomArray(10, -30, 30);
 			int i=0;
 			List<Integer> valuesShuffled = Arrays.stream(values).boxed().collect(Collectors.toList());
 			Collections.shuffle(valuesShuffled);
@@ -130,6 +116,10 @@ class AVLTest {
 			Collections.shuffle(valuesShuffled2);
 			for (int x : valuesShuffled)
 			{
+				i++;
+				if(i == 15){
+					BTreePrinter.printNode(tree.getRoot());
+				}
 				if (x < 0)
 					tree.delete(-x);
 				else
@@ -220,13 +210,12 @@ class AVLTest {
 
 	void testJoin()
 	{
-		int[] arr1 = {1,2}, arr2 = {4};
+		int[] arr1 = {1,2,3,4,5}, arr2 = {7,8,9,10,11,12,13,14,15};
 		TestTree tree1 = arrayToTree(arr1), tree2 = arrayToTree(arr2);
 
-		tree1.join(tree1.new AVLNode(3, "3"), tree2);
+		tree1.join(tree1.new AVLNode(6, "6"), tree2);
 		tree1.check_if_balanced(tree1.getRoot());
 		assert(tree1.sanitizeTree(tree1.getRoot()));
-		System.out.println("testJoin Passed!");
 	}
 
 	static public class TestTree extends AVLTree {
