@@ -531,7 +531,9 @@ public class AVLTree {
         boolean parentIsLeftChild = grandParent != null && grandParent.getLeft() == parent;
 
         parent.setRight(node.getLeft());
-        node.getLeft().setParent(parent);
+        if (node.getLeft().isRealNode()) {
+            node.getLeft().setParent(parent);
+        }
         parent.setParent(node);
         node.setLeft(parent);
         node.setParent(grandParent);
@@ -560,7 +562,9 @@ public class AVLTree {
 
         node.setParent(grandParent);
         parent.setLeft(tempB);
-        tempB.setParent(parent);
+        if (tempB.isRealNode()) {
+            tempB.setParent(parent);
+        }
         node.setRight(parent);
         parent.setParent(node);
         if (grandParent == null) {
@@ -572,7 +576,6 @@ public class AVLTree {
                 grandParent.setRight(node);
             }
         }
-
 
 
         parent.setHeight(1 + Math.max(parent.getRight().getHeight(), parent.getLeft().getHeight()));
@@ -592,8 +595,8 @@ public class AVLTree {
             }
             return y;
         } else {
-                parent = y.getParent();
-            while (parent!= null && parent.getRight() == y) {
+            parent = y.getParent();
+            while (parent != null && parent.getRight() == y) {
                 y = parent;
                 parent = parent.getParent();
             }
@@ -601,15 +604,15 @@ public class AVLTree {
         }
     }
 
-    private int rankDifferenceLeft(IAVLNode node) {
+    public static int rankDifferenceLeft(IAVLNode node) {
         return node.getHeight() - node.getLeft().getHeight();
     }
 
-    private int rankDifferenceRight(IAVLNode node) {
+    public static int rankDifferenceRight(IAVLNode node) {
         return node.getHeight() - node.getRight().getHeight();
     }
 
-    private boolean isRankDifferenceLegal(IAVLNode node) {
+    public static boolean isRankDifferenceLegal(IAVLNode node) {
         return (rankDifferenceLeft(node) == 1 && rankDifferenceRight(node) == 1) || (rankDifferenceLeft(node) == 2 && rankDifferenceRight(node) == 1) || (rankDifferenceLeft(node) == 1 && rankDifferenceRight(node) == 2);
     }
 
@@ -903,11 +906,13 @@ public class AVLTree {
         }
 
         public boolean isLeaf() {
-            return this.getLeft().getHeight() == -1 && this.getRight().getHeight() == -1;
+            return this.getHeight() == 0;
         }
 
         public boolean isUnaryNode() {
-            return (this.getRight().isRealNode() && !this.getLeft().isRealNode()) || ((!this.getRight().isRealNode() && this.getLeft().isRealNode()));
+            return this.isRealNode() &&
+                    ((this.getRight().isRealNode() && !this.getLeft().isRealNode())
+                            || ((!this.getRight().isRealNode() && this.getLeft().isRealNode())));
         }
 
         public void setKey(int k) {

@@ -165,6 +165,12 @@ public class Test {
         return tree;
     }
 
+    public static boolean testRankDiffs(AVLTree.IAVLNode node) {
+        return AVLTree.isRankDifferenceLegal(node)
+                && AVLTree.isRankDifferenceLegal(node.getLeft())
+                && AVLTree.isRankDifferenceLegal(node.getRight());
+    }
+
     public static boolean testHeights(AVLTree.IAVLNode node) {
         if (!node.isRealNode()) return true;
         return node.getHeight() == 1 + Math.max(node.getLeft().getHeight(), node.getRight().getHeight())
