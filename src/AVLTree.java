@@ -17,6 +17,7 @@ public class AVLTree {
 
     public AVLTree(IAVLNode root) {
         this.root = root;
+        root.setParent(null);
         this.size = root.getSize();
     }
 
@@ -98,6 +99,9 @@ public class AVLTree {
         }
         IAVLNode parent = node.getParent();
 
+        if (parent.getLeft()==null) {
+            System.out.println("bla");
+        }
         // getLeft/getRight always exist because we have virtual nodes
         int leftRankDiff = parent.getHeight() - parent.getLeft().getHeight();
         int rightRankDiff = parent.getHeight() - parent.getRight().getHeight();
@@ -322,16 +326,23 @@ public class AVLTree {
                 if (parent.getLeft().isRealNode()) {
                     logger.finest("joining smaller tree with sibling at left");
                     IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
-                    complexities.add(smaller.join(copyNode, new AVLTree(parent.getLeft())));
+                    AVLTree subTree = new AVLTree(parent.getLeft());
+                    complexities.add(smaller.join(copyNode, subTree));
                 }
             } else if (parent.getLeft() == node) {
                 // this is a left child
                 if (parent.getRight().isRealNode()) {
                     logger.finest("joining bigger tree with sibling at right");
-                    AVLTree rightTree = new AVLTree(parent.getRight());
                     IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
+                    AVLTree rightTree = new AVLTree(parent.getRight());
                     complexities.add(bigger.join(copyNode, rightTree));
                 }
+            }
+            if (bigger.getRoot() != null && !Test.testParents(bigger.getRoot())) {
+                System.out.println("blaaaaaaa");
+            }
+            if (smaller.getRoot() != null && !Test.testParents(smaller.getRoot())) {
+                System.out.println("blaaaaaaa");
             }
             splitRecBottomUp(parent, smaller, bigger, complexities);
         }
@@ -447,7 +458,7 @@ public class AVLTree {
             joinNode.setParent(x);
             x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
             x.setSize(this.getRoot().getSize() + joinNode.getSize() + 1);
-            if (joinNode == t.getRoot()) {
+            if (parent == null) {
                 this.root = x;
             } else {
                 this.root = t.getRoot();
@@ -472,7 +483,7 @@ public class AVLTree {
             joinNode.setParent(x);
             x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
             x.setSize(t.getRoot().getSize() + joinNode.getSize() + 1);
-            if (joinNode == this.getRoot()) {
+            if (parent == null) {
                 this.root = x;
             } else {
                 parent.setRight(x);

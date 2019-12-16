@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class AVLTest {
@@ -91,6 +88,34 @@ class AVLTest {
         System.out.println("testDelete Passed!");
     }
 
+    void testJoinNew() {
+        Random rand = new Random();
+        AVLTree tree = new AVLTree();
+        for (int i = 0; i < 100; i++) {
+            int n = rand.nextInt(500);
+            tree.insert(n, Integer.toString(n));
+        }
+        try {
+            testJoin(tree);
+        } catch (Throwable ex) {
+            System.out.println("fdgfgd");
+        }
+    }
+
+    void testJoin(AVLTree tree) {
+        AVLTree secTree = new AVLTree();
+        int minNum = Integer.parseInt(tree.max()) + 10;
+        Random rand = new Random();
+        for (int i = 0; i < 1.5 * tree.size(); i++) {
+            int key = rand.nextInt((int) Math.floor(1.5 * tree.size())) + minNum + 5;
+            secTree.insert(key, Integer.toString(key));
+        }
+        AVLTree tempTree = new AVLTree();
+        tempTree.insert(minNum + 4, Integer.toString(minNum + 4));
+        tree.join(tempTree.getRoot(), secTree);
+        System.out.println("Join Passed!");
+    }
+
     static AVLTree simulateProblematicTree() {
         AVLTree tree = new AVLTree();
         int[] keys = {5, 15, -1, 28, 1, 29, 1, -19, -15, 0, -17, 28, 13, 16, 0, -23, 8, -28, 12, 29, -13, -7, -10, 12, -12, -4, 3, 21, -4, -28, 6, -8, 29, 18, 4, -29, -1, -18, -8, -20, 20, 1, 7, -12, 24, 1, 4, -6, 8, 12, 22, -2, -9, -19, 16, -23, -5, 14, 14, -11, 23, 18, -25, 12, 9, 27, -20, -28, -9, 7, 6, -3, 7, 2, -29, 14, -7, -21, -27, 4, 24, -7, 1, 4, 28, -9, -21, -2, 6, -4, 20, -19, -26, -27, 12, 13, 8, -5, 18, -25, 14, 21, 23, -28, -15, -1, -18, 8, -7, -14, -21, -14, 23, -16, -14, 16, -24, -25, 12, 14, 24, -18, 0, 11, 12, 2, -13, 17, -12, -7, 13, 20, -2, -29, 27, -14, 1, -25, -19, 9, 10, -27, -15, 4, -21, 14, 14, 11, -5, 22, -7, 12, 4, -7, -4, 25, 8, 28, 25, -23, -11, -24, -13, -11, 15, 7, -15, 17, 18, -18, 0, 4, 6, -13, 0, 23, 19, 14, -20, -15, -26, 28, 23, -22, 5, 21, 10, 16, -10, -27, 21, -12, -16, -13, 25, 16, -25, -28, -29, -11, -16, 26, 6, 19, 25, 28, -7, 9, -18, -24, -14, -9, -27, 7, -17, -2, -28, -5, -22, -1, 13, -12, -2, 20, 13, 29, -25, -28, -6, 18, -22, 27, -20, -9, 29, -17, -22, 20, -7, 3, -1, 26, -2, -23, -15, -9, 0, 7, 11, -12, -23, -23, 1, -1, 22, -9, 17, 19, 14, -29, 17, -12, -1, -5, 1, -2, -8, -1, 15, 20, 23, -15, -26, -27, -8, 19, -10, 12, 7, 28, -22, 10, -26, -2, -10, -11, 3, -20, -25, -18, 11, 13, -27, 18, 11, -11, -20, 12, -12, 11, 3, 0, -7, 18, -20, -13, 12, -14, -19, 28, -19, 26, -1, 1, -10, -6, -16, 28, -3, 12, 27, 28, 5, 13, 22, -4, -22, 20, -16, 17, 7, -5, -9, -4, 5, -12, 29, 26, 24, 5, -14, -13, 22, 20, -29, 27, 15, 22, 7, -26, -3, 10, -19, -12, -13, 2, 3, -28, -28, 26, -15, -5, -22, -3, 29, 22, 13, -2};
@@ -100,7 +125,7 @@ class AVLTest {
                 if (k > 0) {
                     tree.insert(k, Integer.toString(k));
                 } else {
-                    tree.delete(-k);
+                    //tree.delete(-k);
                 }
                 if (!Test.testHeights(tree.getRoot())) {
                     System.out.println("failed heights after " + k);
@@ -111,11 +136,7 @@ class AVLTest {
                 if (!Test.testParents(tree.getRoot())) {
                     System.out.println("failed parent after " + k);
                 }
-                try {
-                    BTreePrinter.printNode(tree.getRoot());
-                } catch (Throwable ex) {
-                    System.out.println("failed on index: " + i);
-                }
+
             }
             i++;
         }
@@ -130,7 +151,7 @@ class AVLTest {
     void testInsertAndDelete(AVLTree tree) {
 
         for (int tries = 0; tries < 50; tries++) {
-            int[] values = randomArray(10, -30, 30);
+            int[] values = randomArray(100, -30, 30);
             int i = 0;
             List<Integer> valuesShuffled = Arrays.stream(values).boxed().collect(Collectors.toList());
             Collections.shuffle(valuesShuffled);
@@ -138,15 +159,9 @@ class AVLTest {
             List<Integer> valuesShuffled2 = new ArrayList<Integer>(valuesShuffled);
             Collections.shuffle(valuesShuffled2);
             for (int x : valuesShuffled) {
-                i++;
-                if ((i - 1) % 4 == 0) {
-                    BTreePrinter.printNode(tree.getRoot());
-                }
                 if (x < 0) {
-                    System.out.println("deleting " + -x);
                     tree.delete(-x);
                 } else {
-                    System.out.println("inserting " + x);
                     tree.insert(x, Integer.toString(x));
                 }
             }
@@ -328,8 +343,10 @@ class AVLTest {
 
     public static void main(String[] args) {
         AVLTest test = new AVLTest();
+        AVLTree mTree = simulateProblematicTree();
         AVLTree tree = new TestTree();
-
+        test.testJoinNew();
+        test.testJoin(mTree);
         test.testEmpty();
         test.testSize();
         test.testDelete();
@@ -339,7 +356,6 @@ class AVLTest {
         test.testMinMax();
         test.testInfoToArray();
         test.testKeysToArray();
-        AVLTree mTree = simulateProblematicTree();
         System.out.println("done test");
         test.testInsertAndDelete();
         test.testJoin();

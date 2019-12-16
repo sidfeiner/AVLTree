@@ -9,7 +9,13 @@ import java.util.stream.IntStream;
  * Date:12/16/19
  */
 public class TimingsSplit {
-    static void firstTest() {
+
+    static int getWeirdSplitKey(AVLTree tree) {
+        AVLTree leftTree = new AVLTree(tree.getRoot().getLeft());
+        return Integer.parseInt(leftTree.max());
+    }
+
+    static void firstTest(boolean isRandomKey) {
         double sumComplexity = 0;
         double maxComplexity = 0;
         for (int i = 1; i <= 10; i++) {
@@ -20,7 +26,7 @@ public class TimingsSplit {
                 tree.insert(vals.get(j), Integer.toString(vals.get(j)));
             }
 
-            int keyToSplit = vals.get(new Random().nextInt(vals.size()));
+            int keyToSplit = isRandomKey ?  vals.get(new Random().nextInt(vals.size())):getWeirdSplitKey(tree);
             List<Integer> complexities = tree.splitAnalysis(keyToSplit);
             maxComplexity = Collections.max(complexities);
             sumComplexity = complexities.stream().mapToInt(Integer::intValue).sum();
@@ -32,7 +38,11 @@ public class TimingsSplit {
     }
 
     public static void main(String[] args) {
-        firstTest();
+        System.out.println("split by random key");
+        firstTest(true);
+        System.out.println("#######################################");
+        System.out.println("split by maximum in left subtree");
+        firstTest(false);
     }
 
 }
