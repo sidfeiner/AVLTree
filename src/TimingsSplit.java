@@ -11,8 +11,9 @@ import java.util.stream.IntStream;
 public class TimingsSplit {
 
     static int getWeirdSplitKey(AVLTree tree) {
-        AVLTree leftTree = new AVLTree(tree.getRoot().getLeft());
-        return Integer.parseInt(leftTree.max());
+        AVLTree.IAVLNode node = tree.getRoot().getLeft();
+        while (node.getRight().isRealNode()) node = node.getRight();
+        return node.getKey();
     }
 
     static void firstTest(boolean isRandomKey) {
@@ -26,7 +27,7 @@ public class TimingsSplit {
                 tree.insert(vals.get(j), Integer.toString(vals.get(j)));
             }
 
-            int keyToSplit = isRandomKey ?  vals.get(new Random().nextInt(vals.size())):getWeirdSplitKey(tree);
+            int keyToSplit = isRandomKey ? vals.get(new Random().nextInt(vals.size())) : getWeirdSplitKey(tree);
             List<Integer> complexities = tree.splitAnalysis(keyToSplit);
             maxComplexity = Collections.max(complexities);
             sumComplexity = complexities.stream().mapToInt(Integer::intValue).sum();
