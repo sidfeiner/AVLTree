@@ -211,11 +211,11 @@ public class AVLTree {
         if (node.isUnaryNode()) {
             deleteUnaryNode(node);
             decrementAncestorsSize(parent);
-            return (rebalanceAfterDelete(node.getParent()));
+            return (rebalanceAfterDelete(parent));
         }
         IAVLNode nodeToDelete = swapNodeWithSuccessor(node);
         deleteAfterSuccessorSwap(nodeToDelete);
-        decrementAncestorsSize(nodeToDelete.getParent());
+        decrementAncestorsSize(parent);
         return rebalanceAfterDelete(nodeToDelete.getParent());
     }
 
@@ -684,34 +684,26 @@ public class AVLTree {
                 logger.finest("We have 3-1, 1-1 case");
                 logger.finest("Performing left rotation on: " + parent.getRight().getKey() + " demoting: " + parent.getKey());
                 rotateLeft(parent.getRight());
-                if (parent.getParent() != null) {
-                    logger.finest("Promoting: " + parent.getParent().getKey());
-                    sum += 1;
-                }
-                sum += 2;
+                sum += 3;
             }
             if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 1 && rankDifferenceRight(parent.getLeft()) == 1) {
                 logger.finest("We have 1-3, 1-1 case");
                 logger.finest("Performing right rotation on: " + parent.getLeft().getKey() + " demoting: " + parent.getKey());
                 rotateRight(parent.getLeft());
-                if (parent.getParent() != null) {
-                    logger.finest("Promoting: " + parent.getParent().getKey());
-                    sum += 1;
-                }
-                sum += 2;
+                sum += 3;
             }
 
             if (rankDifferenceRight(parent) == 1 && rankDifferenceLeft(parent) == 3 && rankDifferenceLeft(parent.getRight()) == 2 && rankDifferenceRight(parent.getRight()) == 1) {
                 logger.finest("We have 3-1, 2-1 case");
                 logger.finest("Performing left rotation on: " + parent.getRight().getKey() + "demoting twice: " + parent.getKey());
                 rotateLeft(parent.getRight());
-                sum += 2;
+                sum += 3;
             }
             if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 1 && rankDifferenceRight(parent.getLeft()) == 2) {
                 logger.finest("We have 1-3, 1-2 case");
                 logger.finest("Performing right rotation on: " + parent.getLeft().getKey() + "demoting twice: " + parent.getKey());
                 rotateRight(parent.getLeft());
-                sum += 2;
+                sum += 3;
             }
 
             if (rankDifferenceRight(parent) == 1 && rankDifferenceLeft(parent) == 3 && rankDifferenceLeft(parent.getRight()) == 1 && rankDifferenceRight(parent.getRight()) == 2) {
@@ -719,7 +711,7 @@ public class AVLTree {
                 rotateRight(parent.getRight().getLeft());
                 logger.finest("Performing Double Rotation");
                 rotateLeft(parent.getRight());
-                sum += 2;
+                sum += 6;
             }
 
             if (rankDifferenceRight(parent) == 3 && rankDifferenceLeft(parent) == 1 && rankDifferenceLeft(parent.getLeft()) == 2 && rankDifferenceRight(parent.getLeft()) == 1) {
@@ -727,7 +719,7 @@ public class AVLTree {
                 rotateLeft(parent.getLeft().getRight());
                 logger.finest("Performing Double Rotation");
                 rotateRight(parent.getLeft());
-                sum += 2;
+                sum += 6;
             }
             parent = originalParent;
         }

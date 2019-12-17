@@ -1,4 +1,6 @@
+import javax.xml.bind.SchemaOutputResolver;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,18 +13,21 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
+        int size = 0;
+        Random rand = new Random();
+        for (int i = 1; i <= 10; i++) {
+            int randInt = rand.nextInt(15);
+            tree.insert(randInt, Integer.toString(randInt));
+        }
 
         for (int i = 1; i <= 50; i++) {
-            tree.insert(i, Integer.toString(i));
-        }
-
-        BTreePrinter.printNode(tree.getRoot());
-        for (int i = 1; i <= 20; i++) {
             tree.delete(i);
+            if(tree.size()+1 != size){
+                System.out.println("bkalfklsj");
+            }
+            size = tree.size();
         }
 
-
-        BTreePrinter.printNode(tree.getRoot());
     }
 
     public static void testSplit() {
@@ -169,30 +174,31 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        AVLTree tree = testInsert();
-        System.out.println("testing sizes...");
-        if (!testTreeSize(tree)) {
-            System.out.println("tree sizes are wrong");
-        }
-        System.out.println("testing treeToArray...");
-        if (!testTreeToArray(tree)) {
-            System.out.println("tree to array is wrong");
-        }
-
-        System.out.println("testing parents...");
-        if (!testParents(tree.getRoot())) {
-            System.out.println("parents are wrong");
-        }
-        ;
-        System.out.println("testing heights before delete...");
-        BTreePrinter.printNode(tree.getRoot(), true);
-        if (!testHeights(tree.getRoot())) {
-            System.out.println("heights in tree are wrong");
-        }
-
-
-        System.out.println("testing split, make sure from the prints that the trees are correct and that their SIZES are correct as well");
-        testSplit();
+//        AVLTree tree = testInsert();
+//        System.out.println("testing sizes...");
+//        if (!testTreeSize(tree)) {
+//            System.out.println("tree sizes are wrong");
+//        }
+//        System.out.println("testing treeToArray...");
+//        if (!testTreeToArray(tree)) {
+//            System.out.println("tree to array is wrong");
+//        }
+//
+//        System.out.println("testing parents...");
+//        if (!testParents(tree.getRoot())) {
+//            System.out.println("parents are wrong");
+//        }
+//        ;
+//        System.out.println("testing heights before delete...");
+//        BTreePrinter.printNode(tree.getRoot(), true);
+//        if (!testHeights(tree.getRoot())) {
+//            System.out.println("heights in tree are wrong");
+//        }
+//
+//
+//        System.out.println("testing split, make sure from the prints that the trees are correct and that their SIZES are correct as well");
+//        testSplit();
+        testForDango();
     }
 	/*public static void main(String[] args) {
 		AVLTree tree = new AVLTree();
