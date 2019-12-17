@@ -99,7 +99,7 @@ public class AVLTree {
         }
         IAVLNode parent = node.getParent();
 
-        if (parent.getLeft()==null) {
+        if (parent.getLeft() == null) {
             System.out.println("bla");
         }
         // getLeft/getRight always exist because we have virtual nodes
@@ -249,9 +249,11 @@ public class AVLTree {
             nodesToArrayRec(node.getLeft(), nodes, offset);
         }
         int relIndex = node.getLeft().getSize();
-        nodes[offset + relIndex] = node;
-        if (node.getRight().isRealNode()) {
-            nodesToArrayRec(node.getRight(), nodes, offset + relIndex + 1);
+        if (relIndex + offset <= nodes.length) {
+            nodes[offset + relIndex] = node;
+            if (node.getRight().isRealNode()) {
+                nodesToArrayRec(node.getRight(), nodes, offset + relIndex + 1);
+            }
         }
     }
 
@@ -361,7 +363,11 @@ public class AVLTree {
             } else {
                 bigger = new AVLTree();
             }
-            smaller = new AVLTree();
+            if (node.getLeft().isRealNode()) {
+                smaller = new AVLTree(node.getLeft());
+            } else {
+                smaller = new AVLTree();
+            }
             AVLTree[] result = {smaller, bigger};
             List<Integer> complexities = new ArrayList<>();
             splitRecBottomUp(node, smaller, bigger, complexities);
@@ -520,7 +526,7 @@ public class AVLTree {
                 parent.setRight(x);
                 try {
                     increaseAncestorsSize(parent, 1 + this.getRoot().getSize());
-                } catch (StackOverflowError ex){
+                } catch (StackOverflowError ex) {
                     System.out.println("blabla");
                 }
                 rebalanceTree(x);
