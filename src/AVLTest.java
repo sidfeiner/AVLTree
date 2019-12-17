@@ -95,11 +95,7 @@ class AVLTest {
             int n = rand.nextInt(500);
             tree.insert(n, Integer.toString(n));
         }
-        try {
-            testJoin(tree);
-        } catch (Throwable ex) {
-            System.out.println("fdgfgd");
-        }
+        testJoin(tree);
     }
 
     void testJoin(AVLTree tree) {
@@ -125,17 +121,11 @@ class AVLTest {
                 if (k > 0) {
                     tree.insert(k, Integer.toString(k));
                 } else {
-                    //tree.delete(-k);
+                    tree.delete(-k);
                 }
-                if (!Test.testHeights(tree.getRoot())) {
-                    System.out.println("failed heights after " + k);
-                }
-                if (!Test.testSizes(tree.getRoot())) {
-                    System.out.println("failed size after " + k);
-                }
-                if (!Test.testParents(tree.getRoot())) {
-                    System.out.println("failed parent after " + k);
-                }
+                assert Test.testHeights(tree.getRoot()) : "failed heights after " + k;
+                assert Test.testSizes(tree.getRoot()) : "failed size after " + k;
+                assert Test.testParents(tree.getRoot()) : "failed parent after " + k;
 
             }
             i++;
@@ -344,9 +334,7 @@ class AVLTest {
     public static void main(String[] args) {
         AVLTest test = new AVLTest();
         AVLTree mTree = simulateProblematicTree();
-        AVLTree tree = new TestTree();
         test.testJoinNew();
-        test.testJoin(mTree);
         test.testEmpty();
         test.testSize();
         test.testDelete();
@@ -356,7 +344,6 @@ class AVLTest {
         test.testMinMax();
         test.testInfoToArray();
         test.testKeysToArray();
-        System.out.println("done test");
         test.testInsertAndDelete();
         test.testJoin();
     }
