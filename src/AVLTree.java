@@ -114,7 +114,7 @@ public class AVLTree {
         } else if (leftRankDiff + rightRankDiff == 2 && leftRankDiff != 1) {
             // case of 2-0 or 0-2 or 1-3+ or 3+-1
 
-            int ops = 1;
+            int ops = 2;  // Single rotation is 2 ops, double rotation are 5 ops
             if (rightRankDiff == 0) {
                 // 2-0
                 logger.finest("we have 2-0 case, rotating left");
@@ -123,7 +123,7 @@ public class AVLTree {
                     logger.finest("double rotating needed, first rotate with left child (right-rotate)");
                     IAVLNode left = node.getLeft();
                     rotateRight(left);
-                    ops += 1;
+                    ops += 3; // Add additional ops needed for double rotate
                     node = left;
                 }
                 rotateLeft(node);
@@ -135,7 +135,7 @@ public class AVLTree {
                     logger.finest("double rotating needed, first rotate with right child (left-rotate)");
                     IAVLNode right = node.getRight();
                     rotateLeft(right);
-                    ops += 1;
+                    ops += 3; // Add additional ops needed for double rotate
                     node = right;
                 }
                 rotateRight(node);
