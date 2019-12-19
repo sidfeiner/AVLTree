@@ -81,9 +81,7 @@ class AVLTest {
         List<Integer> valuesShuffled = Arrays.stream(values).boxed().collect(Collectors.toList());
         Collections.shuffle(valuesShuffled);
         for (int x : valuesShuffled) {
-
             tree.delete(x);
-
         }
         System.out.println("testDelete Passed!");
     }
