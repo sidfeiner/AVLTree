@@ -340,15 +340,8 @@ public class AVLTree {
                     complexities.add(bigger.join(copyNode, rightTree));
                 }
             }
-            if (bigger.getRoot() != null && !Test.testParents(bigger.getRoot())) {
-                System.out.println("blaaaaaaa");
-            }
-            if (smaller.getRoot() != null && !Test.testParents(smaller.getRoot())) {
-                System.out.println("blaaaaaaa");
-            }
             splitRecBottomUp(parent, smaller, bigger, complexities);
         }
-
     }
 
     public List<Integer> splitAnalysis(int x) {
@@ -398,7 +391,11 @@ public class AVLTree {
             } else {
                 bigger = new AVLTree();
             }
-            smaller = new AVLTree();
+            if (node.getLeft().isRealNode()) {
+                smaller = new AVLTree(node.getLeft());
+            } else {
+                smaller = new AVLTree();
+            }
             AVLTree[] result = {smaller, bigger};
             splitRecBottomUp(node, smaller, bigger, new ArrayList<>());
             return result;
