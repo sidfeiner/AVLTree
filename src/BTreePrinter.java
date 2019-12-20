@@ -5,16 +5,16 @@ import java.util.List;
 class BTreePrinter {
 
     public static void printNode(AVLTree.IAVLNode root) {
-        printNode(root, false);
+        printNode(root, "key");
     }
 
-    public static void printNode(AVLTree.IAVLNode root, boolean printHeight) {
+    public static void printNode(AVLTree.IAVLNode root, String printMode) {
         int maxLevel = BTreePrinter.maxLevel(root);
 
-        printNodeInternal(Collections.singletonList(root), 1, maxLevel, printHeight);
+        printNodeInternal(Collections.singletonList(root), 1, maxLevel, printMode);
     }
 
-    private static void printNodeInternal(List<AVLTree.IAVLNode> nodes, int level, int maxLevel, boolean printHeight) {
+    private static void printNodeInternal(List<AVLTree.IAVLNode> nodes, int level, int maxLevel, String printMode) {
         if (nodes.isEmpty() || BTreePrinter.isAllElementsNull(nodes))
             return;
 
@@ -28,7 +28,20 @@ class BTreePrinter {
         List<AVLTree.IAVLNode> newNodes = new ArrayList<AVLTree.IAVLNode>();
         for (AVLTree.IAVLNode node : nodes) {
             if (node != null) {
-                int valToPrint = printHeight ? node.getHeight() : node.getKey();
+                String valToPrint;
+                switch (printMode) {
+                    case "key":
+                        valToPrint = Integer.toString(node.getKey());
+                        break;
+                    case "height":
+                        valToPrint = Integer.toString(node.getHeight());
+                        break;
+                    case "size":
+                        valToPrint = Integer.toString(node.getSize());
+                        break;
+                    default:
+                        valToPrint = node.getValue();
+                }
                 System.out.print(valToPrint);
                 newNodes.add(node.getLeft());
                 newNodes.add(node.getRight());
@@ -68,7 +81,7 @@ class BTreePrinter {
             System.out.println("");
         }
 
-        printNodeInternal(newNodes, level + 1, maxLevel, printHeight);
+        printNodeInternal(newNodes, level + 1, maxLevel, printMode);
     }
 
     private static void printWhitespaces(int count) {

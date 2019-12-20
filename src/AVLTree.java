@@ -849,7 +849,7 @@ public class AVLTree {
             while (y.getRight().isRealNode()) {
                 y = y.getRight();
             }
-            this.minNode = y;
+            this.maxNode = y;
         }
     }
 
