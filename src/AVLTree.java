@@ -16,7 +16,6 @@ Sidney Feiner, 328871199, sidneyfeiner
 public class AVLTree {
     private IAVLNode root; //root
     private int size; //size of tree
-    private IAVLNode virtualNode = new AVLNode(-1, "V", true); //one virtual node for all leafs of tree
     private IAVLNode maxNode; //node with Maximum key
     private IAVLNode minNode; //node with Minimum key
 
@@ -177,6 +176,12 @@ public class AVLTree {
      */
     public int insert(int k, String i) {
         AVLNode node = new AVLNode(k, i);
+        AVLNode v1 = new AVLNode(-1,"V",true);
+        v1.setParent(node);
+        AVLNode v2 = new AVLNode(-1,"V",true);
+        v2.setParent(node);
+        node.setRight(v1);
+        node.setLeft(v2);
         if (this.root == null) {
             this.root = node;
             this.size++;
@@ -229,16 +234,16 @@ public class AVLTree {
         }
         this.size--;
         IAVLNode parent = node.getParent();
-        if (node.isLeaf()) {
+        if (node.isLeaf()) { //deletes if node is leaf
             deleteLeaf(node);
             decrementAncestorsSize(parent);
             return (rebalanceAfterDelete(parent));
-        } //deletes if node is leaf
+        }//deletes if node is unary node
         if (node.isUnaryNode()) {
             deleteUnaryNode(node);
             decrementAncestorsSize(parent);
             return (rebalanceAfterDelete(parent));
-        } //deletes if node is unary node
+        } //swaps with successor then deletes if regular node
         IAVLNode nodeToDelete = swapNodeWithSuccessor(node);
         parent = nodeToDelete.getParent();
         deleteAfterSuccessorSwap(nodeToDelete); // swaps regular node with successor then deletes
@@ -436,8 +441,8 @@ public class AVLTree {
      * postcondition: none
      */
     public int join(IAVLNode x, AVLTree t) {
-        if (t.getRoot() != null && this.getRoot() != null) {
-            if (x.getKey() > this.getRoot().getKey()) {
+        if (t.getRoot() != null && this.getRoot() != null) { //both tress are not null
+            if (x.getKey() > this.getRoot().getKey()) { // x and t are of bigger keys
                 return (joinBiggerKeyTree(x, t));
             } else {
                 if (x.getKey() > this.getRoot().getKey()) {
@@ -459,9 +464,13 @@ public class AVLTree {
                         this.insert(x.getKey(), x.getValue());
                         return this.getRoot().getHeight() + 1;
                     } else {
+                        IAVLNode v1 = new AVLNode(-1,"V",true);
+                        v1.setParent(x);
+                        IAVLNode v2 = new AVLNode(-1,"V",true);
+                        v2.setParent(x);
                         this.root = x;
-                        x.setLeft(virtualNode);
-                        x.setRight(virtualNode);
+                        x.setLeft(v1);
+                        x.setRight(v2);
                         x.setHeight(0);
                         this.size = 1;
                         x.setSize(1);
@@ -517,7 +526,7 @@ public class AVLTree {
                 this.root = x;
             } else {
                 parent.setRight(x);
-                increaseAncestorsSize(x.getParent(), t.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(), x.getRight().getSize()+1);
                 rebalanceTree(x);
             }
 
@@ -533,7 +542,7 @@ public class AVLTree {
         int cost = Math.abs(this.getRoot().getHeight() - t.getRoot().getHeight()) + 1;
         if (t.getRoot().getHeight() < this.getRoot().getHeight()) { //if t is of smaller rank
             IAVLNode joinNode = this.getRoot();
-            while (joinNode.getHeight() >= t.getRoot().getHeight()) {
+            while (joinNode.getHeight() > t.getRoot().getHeight()) {
                 joinNode = joinNode.getLeft();
             }
             x.setRight(joinNode);
@@ -547,9 +556,8 @@ public class AVLTree {
             if (joinNode == this.getRoot()) {
                 this.root = x;
             } else {
-
                 parent.setRight(x);
-                increaseAncestorsSize(x.getParent(), t.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(), x.getLeft().getSize()+1);
                 rebalanceTree(x);
             }
         } else { //if t is of larger rank
@@ -570,7 +578,7 @@ public class AVLTree {
             } else {
                 this.root = t.getRoot();
                 parent.setLeft(x);
-                increaseAncestorsSize(x.getParent(), this.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(), x.getRight().getSize()+1);
                 rebalanceTree(x);
             }
         }
@@ -777,10 +785,13 @@ public class AVLTree {
         if (node == this.root) {
             this.root = null;
         } else {
-            if (node.getParent().getRight() == node) { // Y is right child of parent
-                node.getParent().setRight(virtualNode);
+            IAVLNode parent = node.getParent();
+            if (parent.getRight() == node) { // Y is right child of parent
+                node.getParent().setRight(node.getRight());
+                node.getRight().setParent(parent);
             } else {
-                node.getParent().setLeft(virtualNode);
+                node.getParent().setLeft(node.getRight());
+                node.getRight().setParent(parent);
             }
 
         }
@@ -950,8 +961,7 @@ public class AVLTree {
                 height = 0;
                 this.size = size;
             }
-            this.left = virtualNode;
-            this.right = virtualNode;
+
         }
 
         @Override
