@@ -176,12 +176,6 @@ public class AVLTree {
      */
     public int insert(int k, String i) {
         AVLNode node = new AVLNode(k, i);
-        AVLNode v1 = new AVLNode(-1, "V", true);
-        v1.setParent(node);
-        AVLNode v2 = new AVLNode(-1, "V", true);
-        v2.setParent(node);
-        node.setRight(v1);
-        node.setLeft(v2);
         if (this.root == null) {
             this.root = node;
             this.size++;
@@ -362,7 +356,7 @@ public class AVLTree {
         if (node != this.root) {
             if (parent.getRight() == node) {
                 // this is a right child
-                IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
+                IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false);
                 AVLTree leftTree;
                 if (parent.getLeft().isRealNode()) {
                     leftTree = new AVLTree(parent.getLeft());
@@ -372,7 +366,7 @@ public class AVLTree {
                 complexities.add(smaller.join(copyNode, leftTree));
             } else if (parent.getLeft() == node) {
                 // this is a left child
-                IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, 1);
+                IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false);
                 AVLTree rightTree;
                 if (parent.getRight().isRealNode()) {
                     rightTree = new AVLTree(parent.getRight());
@@ -405,10 +399,8 @@ public class AVLTree {
             if (node.getRight().isRealNode()) {
                 bigger = new AVLTree(node.getRight());
             }
-            smaller.updateMin();
-            smaller.updateMax();
-            bigger.updateMin();
-            bigger.updateMax();
+            smaller.updateMinMax();
+            bigger.updateMinMax();
             return new AVLTree[]{smaller, bigger};
         } else {
             // splitting node is not the root
@@ -424,10 +416,8 @@ public class AVLTree {
             }
             AVLTree[] result = {smaller, bigger};
             splitRecBottomUp(node, smaller, bigger, new ArrayList<>());
-            smaller.updateMin();
-            smaller.updateMax();
-            bigger.updateMin();
-            bigger.updateMax();
+            smaller.updateMinMax();
+            bigger.updateMinMax();
             return result;
         }
     }
@@ -466,13 +456,7 @@ public class AVLTree {
                         this.insert(x.getKey(), x.getValue());
                         return this.getRoot().getHeight() + 1;
                     } else { // both are null
-                        IAVLNode v1 = new AVLNode(-1, "V", true);
-                        v1.setParent(x);
-                        IAVLNode v2 = new AVLNode(-1, "V", true);
-                        v2.setParent(x);
                         this.root = x;
-                        x.setLeft(v1);
-                        x.setRight(v2);
                         x.setHeight(0);
                         this.size = 1;
                         this.minNode = x;
@@ -678,7 +662,6 @@ public class AVLTree {
     /*returns predecessor of the node*/
     private IAVLNode getPredecessor(IAVLNode node) {
         IAVLNode y = node;
-        IAVLNode parent;
         if (node.getLeft().isRealNode()) {
             y = node.getLeft();
             while (y.getRight().isRealNode()) {
@@ -696,7 +679,6 @@ public class AVLTree {
     /*returns successor of the node*/
     private IAVLNode getSuccessor(IAVLNode node) {
         IAVLNode y = node;
-        IAVLNode parent;
         if (node.getRight().isRealNode()) {
             y = node.getRight();
             while (y.getLeft().isRealNode()) {
@@ -785,7 +767,6 @@ public class AVLTree {
 
     /*deletes the node which is a leaf from the tree*/
     private void deleteLeaf(IAVLNode node) {
-
         if (node == this.root) {
             this.root = null;
         } else {
@@ -863,7 +844,15 @@ public class AVLTree {
 
     }
 
-    /*sets minKey,minValue to min of tree*/
+    /**
+     * sets minKey, maxKey pointers
+     */
+    private void updateMinMax() {
+        updateMin();
+        updateMax();
+    }
+
+    /*sets minKey to min of tree*/
     private void updateMin() {
         if (this.size == 0) minNode = null;
         else if (this.size == 1) minNode = this.root;
@@ -876,7 +865,7 @@ public class AVLTree {
         }
     }
 
-    /*sets minKey,minValue to min of tree*/
+    /*sets maxKey to max of tree*/
     private void updateMax() {
         if (this.size == 0) maxNode = null;
         else if (this.size == 1) maxNode = this.root;
@@ -964,8 +953,11 @@ public class AVLTree {
             } else {
                 height = 0;
                 this.size = size;
+                this.left = new AVLNode(-1, "V", true);
+                this.right = new AVLNode(-1, "V", true);
+                this.left.setParent(this);
+                this.right.setParent(this);
             }
-
         }
 
         @Override

@@ -211,53 +211,60 @@ public class Test {
         assert testMax(tree) : "testMax are wrong " + msgSuffix;
     }
 
-    public static void testRandomTree(int size) {
-        AVLTree tree = new AVLTree();
-        List<Integer> keys = IntStream.rangeClosed(1, size).boxed().collect(Collectors.toList());
-        Collections.shuffle(keys);
-//        List<Integer> keys = new ArrayList<Integer>() {{
-//            add(7);
-//            add(5);
-//            add(9);
-//            add(1);
-//            add(6);
-//            add(2);
-//            add(4);
-//            add(3);
-//            add(8);
-//        }};
-        System.out.println("-testing inserts");
+    public static void testInserts(List<Integer> keys, AVLTree tree) {
         for (int k : keys) {
-            System.out.println("insert " + k);
+            //System.out.println("insert " + k);
             tree.insert(k, Integer.toString(k));
             assertOnTree(tree, "after inserting " + k);
         }
-        //BTreePrinter.printNode(tree.getRoot());
-        int randIndex;
+    }
+
+    public static void testDeletes(List<Integer> keys, AVLTree tree, int deleteAmount) {
+        int delIndex;
         int k;
         Random random = new Random();
-        System.out.println("-testing deletes");
-        for (int i = 0; i < Math.ceil(size / 10.0); i++) {
-            randIndex = random.nextInt(keys.size());
-            k = keys.remove(randIndex);
+        System.out.println("--normal delete");
+        for (int i = 0; i < deleteAmount; i++) {
+            delIndex = random.nextInt(keys.size());
+            k = keys.remove(delIndex);
             tree.delete(k);
-            System.out.println("deleted " + k);
+            //System.out.println("deleted " + k);
             assertOnTree(tree, "after deleting " + k);
         }
         List<Integer> deletedKeys = new ArrayList<>();
         if (keys.size() > 0) {
-            randIndex = keys.indexOf(Integer.parseInt(tree.max()));
-            k = keys.get(randIndex);
+            System.out.println("--max key delete");
+            delIndex = keys.indexOf(Integer.parseInt(tree.max()));
+            k = keys.get(delIndex);
             tree.delete(k);
-            keys.remove(randIndex);
+            keys.remove(delIndex);
             assertOnTree(tree, "deleting max key");
             deletedKeys.add(k);
         }
         if (keys.size() > 0) {
-            randIndex = keys.indexOf(Integer.parseInt(tree.max()));
-            k = keys.get(randIndex);
+            System.out.println("--second max key delete");
+            delIndex = keys.indexOf(Integer.parseInt(tree.max()));
+            k = keys.get(delIndex);
             tree.delete(k);
-            keys.remove(randIndex);
+            keys.remove(delIndex);
+            assertOnTree(tree, "deleting max key second time");
+            deletedKeys.add(k);
+        }
+        if (keys.size() > 0) {
+            System.out.println("--min key delete");
+            delIndex = keys.indexOf(Integer.parseInt(tree.min()));
+            k = keys.get(delIndex);
+            tree.delete(k);
+            keys.remove(delIndex);
+            assertOnTree(tree, "deleting min key");
+            deletedKeys.add(k);
+        }
+        if (keys.size() > 0) {
+            System.out.println("--second min key delete");
+            delIndex = keys.indexOf(Integer.parseInt(tree.min()));
+            k = keys.get(delIndex);
+            tree.delete(k);
+            keys.remove(delIndex);
             assertOnTree(tree, "deleting max key second time");
             deletedKeys.add(k);
         }
@@ -265,39 +272,52 @@ public class Test {
             tree.insert(dk, Integer.toString(dk));
             keys.add(dk);
         }
+    }
+
+    public static void testSplit(List<Integer> keys, AVLTree tree) {
+        Random random  = new Random();
+        int splitKey = keys.get(random.nextInt(keys.size()));
+        int smallerAmount = 0, biggerAmount = 0;
+        for (int key : keys) {
+            if (key < splitKey) smallerAmount++;
+            if (key > splitKey) biggerAmount++;
+        }
+        //BTreePrinter.printNode(tree.getRoot());
+        AVLTree[] splitParts = tree.split(splitKey);
+
+        assert splitParts[0].size() == smallerAmount : "smaller tree wrong size when splitting by " + splitKey;
+        assert splitParts[1].size() == biggerAmount : "bigger tree wrong size when splitting by " + splitKey;
+        assertOnTree(splitParts[0], "on smaller tree when splitting by " + splitKey);
+        assertOnTree(splitParts[1], "on bigger tree when splitting by " + splitKey);
+    }
+
+    public static void testRandomTree(int size) {
+        AVLTree tree = new AVLTree();
+        List<Integer> keys = IntStream.rangeClosed(1, size).boxed().collect(Collectors.toList());
+        Collections.shuffle(keys);
+        System.out.println("-testing inserts");
+        testInserts(keys, tree);
+        //BTreePrinter.printNode(tree.getRoot());
+        System.out.println("-testing deletes");
+        testDeletes(keys, tree, (int)Math.ceil(size / 10.0));
 
         if (keys.size() > 0) {
             System.out.println("-testing split");
-            int splitKey = keys.get(random.nextInt(keys.size()));
-            int smallerAmount = 0, biggerAmount = 0;
-            for (int key : keys) {
-                if (key < splitKey) smallerAmount++;
-                if (key > splitKey) biggerAmount++;
-            }
-            //BTreePrinter.printNode(tree.getRoot());
-            AVLTree[] splitParts = tree.split(splitKey);
-
-            assert splitParts[0].size() == smallerAmount : "smaller tree wrong size when splitting by " + splitKey;
-            assert splitParts[1].size() == biggerAmount : "bigger tree wrong size when splitting by " + splitKey;
-            assertOnTree(splitParts[0], "on smaller tree when splitting by " + splitKey);
-            assertOnTree(splitParts[1], "on bigger tree when splitting by " + splitKey);
+            testSplit(keys, tree);
         }
     }
 
     public static void main(String[] args) throws InterruptedException {
-        testForDango();
         System.out.println("testing tree of size 0");
         testRandomTree(0);
         System.out.println("testing tree of size 1");
         testRandomTree(1);
         Random rand = new Random();
-        for (int i = 0; i < 100; i++) {
-            int size =rand.nextInt(500);
+        for (int i = 0; i < 200; i++) {
+            int size =rand.nextInt(10000);
             System.out.println("testing tree of size " + size);
             testRandomTree(size);
         }
-
-
     }
 }
 
