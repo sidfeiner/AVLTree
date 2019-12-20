@@ -61,8 +61,8 @@ public class AVLTree {
      * otherwise, returns null
      */
     public String search(int k) {
-        IAVLNode node =  searchRecNode(this.root, k);
-        if(node!= null){
+        IAVLNode node = searchRecNode(this.root, k);
+        if (node != null) {
             return node.getValue();
         }
         return null;
@@ -180,6 +180,8 @@ public class AVLTree {
         if (this.root == null) {
             this.root = node;
             this.size++;
+            this.minNode = node;
+            this.maxNode = node;
             return 0;
         }
         boolean inserted = insertRec(this.root, node);
@@ -187,8 +189,17 @@ public class AVLTree {
         this.size++;
         incrementAncestorsSize(node.getParent());
         int rebalanceOpsAmount = rebalanceTree(node);
-        setMax();
-        setMin();
+        if (this.minNode != null && this.maxNode != null) {
+            // This if is not reached only when we are on a split method, and theat method
+            // will update the min/max at the end
+            if (k < this.minNode.getKey()) {
+                this.minNode = node;
+            }
+            if (k > this.maxNode.getKey()) {
+                this.maxNode = node;
+            }
+        }
+
         return rebalanceOpsAmount;
     }
 
@@ -205,6 +216,18 @@ public class AVLTree {
         if (node == null) {
             return -1;
         }
+        if (this.size() == 1) {
+            this.minNode = null;
+            this.maxNode = null;
+        } else {
+            if (k == this.minNode.getKey()) {
+                this.minNode = getSuccessor(node);
+            }
+            if (k == this.maxNode.getKey()) {
+                this.maxNode = getPredecessor(node);
+            }
+        }
+        this.size--;
         IAVLNode parent = node.getParent();
         if (node.isLeaf()) {
             deleteLeaf(node);
@@ -220,8 +243,6 @@ public class AVLTree {
         deleteAfterSuccessorSwap(nodeToDelete); // swaps regular node with successor then deletes
         decrementAncestorsSize(parent);
         int rebalanceOpsAmount = rebalanceAfterDelete(nodeToDelete.getParent());
-        setMin();
-        setMax();
         return rebalanceOpsAmount;
     }
 
@@ -233,7 +254,7 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String min() {
-        if(minNode!= null) {
+        if (minNode != null) {
             return this.minNode.getValue();
         }
         return null;
@@ -246,8 +267,9 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String max() {
-        if(maxNode!=null){
-        return this.maxNode.getValue();}
+        if (maxNode != null) {
+            return this.maxNode.getValue();
+        }
         return null;
     }
 
@@ -265,6 +287,9 @@ public class AVLTree {
 
     /*returns array of nodes in order by key*/
     private IAVLNode[] nodesToArray(IAVLNode node) {
+        if (node == null) {
+            return new IAVLNode[0];
+        }
         IAVLNode[] nodes = new IAVLNode[node.getSize()];
         nodesToArrayRec(node, nodes, 0);
         return nodes;
@@ -328,7 +353,7 @@ public class AVLTree {
     /*performs the split operation recursively*/
     private void splitRecBottomUp(IAVLNode node, AVLTree smaller, AVLTree bigger, List<Integer> complexities) {
         IAVLNode parent = node.getParent();
-        if(node!=this.root){
+        if (node != this.root) {
             if (parent.getRight() == node) {
                 // this is a right child
                 if (parent.getLeft().isRealNode()) {
@@ -349,7 +374,6 @@ public class AVLTree {
     }
 
 
-
     /**
      * public string split(int x)
      * <p>
@@ -360,11 +384,15 @@ public class AVLTree {
      */
     public AVLTree[] split(int x) {
         IAVLNode node = searchForNode(x);
-        AVLTree smaller, bigger;
+        AVLTree smaller = new AVLTree(), bigger = new AVLTree();
         if (node == this.getRoot()) {
             // recursive function stops at root, so in case we get the root, we split it here
-            smaller = new AVLTree(node.getLeft());
-            bigger = new AVLTree(node.getRight());
+            if (node.getLeft().isRealNode()) {
+                smaller = new AVLTree(node.getLeft());
+            }
+            if (node.getRight().isRealNode()) {
+                bigger = new AVLTree(node.getRight());
+            }
             return new AVLTree[]{smaller, bigger};
         } else {
             // splitting node is not the root
@@ -380,10 +408,10 @@ public class AVLTree {
             }
             AVLTree[] result = {smaller, bigger};
             splitRecBottomUp(node, smaller, bigger, new ArrayList<>());
-            result[0].setMin();
-            result[0].setMax();
-            result[1].setMin();
-            result[1].setMax();
+            smaller.updateMin();
+            smaller.updateMax();
+            bigger.updateMin();
+            bigger.updateMax();
             return result;
         }
     }
@@ -536,7 +564,7 @@ public class AVLTree {
     private int joinTreeWithEqualHeight(IAVLNode x, AVLTree t) {
         this.size = this.size + t.size() + 1;
         if (x.getKey() > this.getRoot().getKey()) { //if x and t keys are larger than this tree
-           this.maxNode = t.maxNode;
+            this.maxNode = t.maxNode;
             x.setRight(t.getRoot());
             t.getRoot().setParent(x);
             x.setLeft(this.getRoot());
@@ -617,6 +645,24 @@ public class AVLTree {
         node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1);
     }
 
+    /*returns predecessor of the node*/
+    private IAVLNode getPredecessor(IAVLNode node) {
+        IAVLNode y = node;
+        IAVLNode parent;
+        if (node.getLeft().isRealNode()) {
+            y = node.getLeft();
+            while (y.getRight().isRealNode()) {
+                y = y.getRight();
+            }
+            return y;
+        } else {
+            while (y.getParent().getLeft() == y) {
+                y = y.getParent();
+            }
+            return y.getParent() == null ? y : y.getParent();
+        }
+    }
+
     /*returns successor of the node*/
     private IAVLNode getSuccessor(IAVLNode node) {
         IAVLNode y = node;
@@ -628,12 +674,10 @@ public class AVLTree {
             }
             return y;
         } else {
-            parent = y.getParent();
-            while (parent != null && parent.getRight() == y) {
-                y = parent;
-                parent = parent.getParent();
+            while (y.getParent().getRight() == y) {
+                y = y.getParent();
             }
-            return y;
+            return y.getParent() == null ? y : y.getParent();
         }
     }
 
@@ -722,8 +766,6 @@ public class AVLTree {
             }
 
         }
-        this.size--;
-
     }
 
     /*deletes the node which is a unary node from the tree*/
@@ -759,8 +801,6 @@ public class AVLTree {
                 }
             }
         }
-        this.size--;
-
     }
 
     /*swaps between key and value of node with its successor*/
@@ -785,187 +825,185 @@ public class AVLTree {
     }
 
     /*sets minKey,minValue to min of tree*/
-    private void setMin() {
-        if (minNode!=null) {
+    private void updateMin() {
+        if (this.size == 0) minNode = null;
+        else if (this.size == 1) minNode = this.root;
+        else {
             IAVLNode y = this.root;
             while (y.getLeft().isRealNode()) {
                 y = y.getLeft();
             }
             this.minNode = y;
         }
-        else {
-            minNode = this.root;
     }
-}
 
     /*sets minKey,minValue to min of tree*/
-    private void setMax() {
-        if (maxNode!=null) {
+    private void updateMax() {
+        if (this.size == 0) maxNode = null;
+        else if (this.size == 1) maxNode = this.root;
+        else {
             IAVLNode y = this.root;
             while (y.getRight().isRealNode()) {
                 y = y.getRight();
             }
-            this.maxNode = y;
-        }
-        else {
-            maxNode = this.root;
+            this.minNode = y;
         }
     }
 
-/**
- * public interface IAVLNode
- * ! Do not delete or modify this - otherwise all tests will fail !
- */
+    /**
+     * public interface IAVLNode
+     * ! Do not delete or modify this - otherwise all tests will fail !
+     */
 
-public interface IAVLNode {
+    public interface IAVLNode {
 
-    public int getSize(); //returns amount of nodes under current node
+        public int getSize(); //returns amount of nodes under current node
 
-    public void setSize(int size); //returns amount of nodes under current node
+        public void setSize(int size); //returns amount of nodes under current node
 
-    public int getKey(); //returns node's key (for virtuval node return -1)
+        public int getKey(); //returns node's key (for virtuval node return -1)
 
-    public String getValue(); //returns node's value [info] (for virtuval node return null)
+        public String getValue(); //returns node's value [info] (for virtuval node return null)
 
-    public void setLeft(IAVLNode node); //sets left child
+        public void setLeft(IAVLNode node); //sets left child
 
-    public IAVLNode getLeft(); //returns left child (if there is no left child return null)
+        public IAVLNode getLeft(); //returns left child (if there is no left child return null)
 
-    public void setRight(IAVLNode node); //sets right child
+        public void setRight(IAVLNode node); //sets right child
 
-    public IAVLNode getRight(); //returns right child (if there is no right child return null)
+        public IAVLNode getRight(); //returns right child (if there is no right child return null)
 
-    public void setParent(IAVLNode node); //sets parent
+        public void setParent(IAVLNode node); //sets parent
 
-    public IAVLNode getParent(); //returns the parent (if there is no parent return null)
+        public IAVLNode getParent(); //returns the parent (if there is no parent return null)
 
-    public boolean isRealNode(); // Returns True if this is a non-virtual AVL node
+        public boolean isRealNode(); // Returns True if this is a non-virtual AVL node
 
-    public void setHeight(int height); // sets the height of the node
+        public void setHeight(int height); // sets the height of the node
 
-    public int getHeight(); // Returns the height of the node (-1 for virtual nodes)
+        public int getHeight(); // Returns the height of the node (-1 for virtual nodes)
 
-    public boolean isLeaf(); //returns True if the node is a leaf
+        public boolean isLeaf(); //returns True if the node is a leaf
 
-    public boolean isUnaryNode(); //returns True if the node is a unary Node
+        public boolean isUnaryNode(); //returns True if the node is a unary Node
 
-    public void setKey(int key); //sets key for node (inside use)
+        public void setKey(int key); //sets key for node (inside use)
 
-    public void setValue(String info); //sets value for node
-}
-
-/**
- * public class AVLNode
- * <p>
- * If you wish to implement classes other than AVLTree
- * (for example AVLNode), do it in this file, not in
- * another file.
- * This class can and must be modified.
- * (It must implement IAVLNode)
- */
-public class AVLNode implements IAVLNode {
-
-    int key, height, size;
-    String info;
-    IAVLNode left, right, parent;
-
-
-    public AVLNode(int key, String info) {
-        this(key, info, false, 1);
+        public void setValue(String info); //sets value for node
     }
 
-    public AVLNode(int key, String info, boolean isVirtual) {
-        this(key, info, isVirtual, 1);
-    }
+    /**
+     * public class AVLNode
+     * <p>
+     * If you wish to implement classes other than AVLTree
+     * (for example AVLNode), do it in this file, not in
+     * another file.
+     * This class can and must be modified.
+     * (It must implement IAVLNode)
+     */
+    public class AVLNode implements IAVLNode {
 
-    public AVLNode(int key, String info, boolean isVirtual, int size) {
-        this.key = key;
-        this.info = info;
-        if (isVirtual) {
-            height = -1;
-            size = 0;
-        } else {
-            height = 0;
+        int key, height, size;
+        String info;
+        IAVLNode left, right, parent;
+
+
+        public AVLNode(int key, String info) {
+            this(key, info, false, 1);
+        }
+
+        public AVLNode(int key, String info, boolean isVirtual) {
+            this(key, info, isVirtual, 1);
+        }
+
+        public AVLNode(int key, String info, boolean isVirtual, int size) {
+            this.key = key;
+            this.info = info;
+            if (isVirtual) {
+                height = -1;
+                size = 0;
+            } else {
+                height = 0;
+                this.size = size;
+            }
+            this.left = virtualNode;
+            this.right = virtualNode;
+        }
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
             this.size = size;
         }
-        this.left = virtualNode;
-        this.right = virtualNode;
-    }
 
-    @Override
-    public int getSize() {
-        return size;
-    }
+        public int getKey() {
+            return key;
+        }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
+        public String getValue() {
+            return info;
+        }
 
-    public int getKey() {
-        return key;
-    }
+        public void setLeft(IAVLNode node) {
+            left = node;
 
-    public String getValue() {
-        return info;
-    }
+        }
 
-    public void setLeft(IAVLNode node) {
-        left = node;
+        public IAVLNode getLeft() {
+            return left;
+        }
 
-    }
+        public void setRight(IAVLNode node) {
+            right = node;
 
-    public IAVLNode getLeft() {
-        return left;
-    }
+        }
 
-    public void setRight(IAVLNode node) {
-        right = node;
+        public IAVLNode getRight() {
+            return right;
+        }
 
-    }
+        public void setParent(IAVLNode node) {
+            parent = node;
+        }
 
-    public IAVLNode getRight() {
-        return right;
-    }
+        public IAVLNode getParent() {
+            return parent;
+        }
 
-    public void setParent(IAVLNode node) {
-        parent = node;
-    }
+        // Returns True if this is a non-virtual AVL node
+        public boolean isRealNode() {
+            return getHeight() != -1;
+        }
 
-    public IAVLNode getParent() {
-        return parent;
-    }
+        public void setHeight(int height) {
+            if (this.getHeight() != -1) {
+                this.height = height;
+            }
+        }
 
-    // Returns True if this is a non-virtual AVL node
-    public boolean isRealNode() {
-        return getHeight() != -1;
-    }
+        public int getHeight() {
+            return this.height;
+        }
 
-    public void setHeight(int height) {
-        if (this.getHeight() != -1) {
-            this.height = height;
+        public boolean isLeaf() {
+            return this.getLeft().getHeight() == -1 && this.getRight().getHeight() == -1;
+        }
+
+        public boolean isUnaryNode() {
+            return (this.getRight().isRealNode() && !this.getLeft().isRealNode()) || ((!this.getRight().isRealNode() && this.getLeft().isRealNode()));
+        }
+
+        public void setKey(int k) {
+            this.key = k;
+        }
+
+        public void setValue(String value) {
+            this.info = value;
         }
     }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public boolean isLeaf() {
-        return this.getLeft().getHeight() == -1 && this.getRight().getHeight() == -1;
-    }
-
-    public boolean isUnaryNode() {
-        return (this.getRight().isRealNode() && !this.getLeft().isRealNode()) || ((!this.getRight().isRealNode() && this.getLeft().isRealNode()));
-    }
-
-    public void setKey(int k) {
-        this.key = k;
-    }
-
-    public void setValue(String value) {
-        this.info = value;
-    }
-}
 
 }
 
