@@ -61,7 +61,11 @@ public class AVLTree {
      * otherwise, returns null
      */
     public String search(int k) {
-        return searchRecNode(this.root, k).getValue();
+        IAVLNode node =  searchRecNode(this.root, k);
+        if(node!= null){
+            return node.getValue();
+        }
+        return null;
     }
 
     /*inserts a node into the tree, returns true if successfully inserted*/
@@ -229,7 +233,10 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String min() {
-        return this.minNode.getValue();
+        if(minNode!= null) {
+            return this.minNode.getValue();
+        }
+        return null;
     }
 
     /**
@@ -239,7 +246,9 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String max() {
-        return this.maxNode.getValue();
+        if(maxNode!=null){
+        return this.maxNode.getValue();}
+        return null;
     }
 
     /*puts all nodes in array sorted by key*/
