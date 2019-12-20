@@ -437,6 +437,7 @@ public class AVLTree {
     private int joinBiggerKeyTree(IAVLNode x, AVLTree t) {
         int cost = Math.abs(this.getRoot().getHeight() - t.getRoot().getHeight()) + 1;
         this.maxNode = t.maxNode;
+        this.size = this.size + t.size() + 1;
         if (t.getRoot().getHeight() > this.getRoot().getHeight()) { //if t is of larger rank
             IAVLNode joinNode = t.getRoot();
             while (joinNode.getHeight() > this.root.getHeight()) {
@@ -478,13 +479,14 @@ public class AVLTree {
             }
 
         }
-        this.size = this.size + t.size() + 1;
+
         return cost;
     }
 
     /*performs join between this tree to a tree with smaller keys,returns cost (height difference + 1)*/
     private int joinSmallerKeyTree(IAVLNode x, AVLTree t) {
         this.minNode = t.minNode;
+        this.size = this.size + t.size() + 1;
         int cost = Math.abs(this.getRoot().getHeight() - t.getRoot().getHeight()) + 1;
         if (t.getRoot().getHeight() > this.getRoot().getHeight()) { //if t is of larger rank
             IAVLNode joinNode = this.getRoot();
@@ -526,12 +528,13 @@ public class AVLTree {
                 rebalanceTree(x);
             }
         }
-        this.size = this.size + t.size() + 1;
+
         return cost;
     }
 
     /*performs join between this tree to a tree with equal height, returns difference in height (1)*/
     private int joinTreeWithEqualHeight(IAVLNode x, AVLTree t) {
+        this.size = this.size + t.size() + 1;
         if (x.getKey() > this.getRoot().getKey()) { //if x and t keys are larger than this tree
            this.maxNode = t.maxNode;
             x.setRight(t.getRoot());
@@ -551,7 +554,7 @@ public class AVLTree {
             x.setParent(null);
         }
         x.setSize(x.getLeft().getSize() + x.getRight().getSize());
-        this.size = this.size + t.size() + 1;
+
         return 1;
     }
 
