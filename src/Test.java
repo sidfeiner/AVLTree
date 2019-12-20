@@ -1,7 +1,6 @@
 import java.util.*;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,14 +14,17 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
+        Random rand = new Random();
+        int[] keys = {0, 2, 4, 6, 1, 7, 3, 8, 9, 5};
         int size = 0;
-        for (int i = 1; i <= 5; i++) {
-            tree.insert(i, Integer.toString(i));
+        for (int k : keys) {
+            tree.insert(k, Integer.toString(k));
         }
 
-        BTreePrinter.printNode(tree.getRoot(),"size");
+        tree.delete(6);
+        BTreePrinter.printNode(tree.getRoot(), "size");
+        assertOnTree(tree, "");
 
-        AVLTree[] trees = tree.split(2);
 
     }
 
@@ -145,7 +147,7 @@ public class Test {
     public static boolean testSizes(AVLTree.IAVLNode node) {
         if (node == null || !node.isRealNode()) return true;
         boolean sizeOK = node.getSize() == node.getLeft().getSize() + node.getRight().getSize() + 1;
-        if (!sizeOK){
+        if (!sizeOK) {
             System.out.println("dd");
         }
         return sizeOK
@@ -202,16 +204,26 @@ public class Test {
 
     public static void testRandomTree(int size) {
         AVLTree tree = new AVLTree();
-        //List<Integer> keys = IntStream.rangeClosed(0, size).boxed().collect(Collectors.toList());
-        int[] keysArr = {7,2,4,0,5,6,3,8,1};
-        List<Integer> keys = Arrays.stream(keysArr).boxed().collect(Collectors.toList());
-        //Collections.shuffle(keys);
+        List<Integer> keys = IntStream.rangeClosed(1, size).boxed().collect(Collectors.toList());
+        Collections.shuffle(keys);
+//        List<Integer> keys = new ArrayList<Integer>() {{
+//            add(7);
+//            add(5);
+//            add(9);
+//            add(1);
+//            add(6);
+//            add(2);
+//            add(4);
+//            add(3);
+//            add(8);
+//        }};
         System.out.println("-testing inserts");
         for (int k : keys) {
             System.out.println("insert " + k);
             tree.insert(k, Integer.toString(k));
             assertOnTree(tree, "after inserting " + k);
         }
+        //BTreePrinter.printNode(tree.getRoot());
         int randIndex;
         int k;
         Random random = new Random();
@@ -245,24 +257,34 @@ public class Test {
             keys.add(dk);
         }
 
-        System.out.println("-testing split");
-        int splitKey = 0;//keys.get(random.nextInt(keys.size()));
-        int smallerAmount = 0, biggerAmount = 0;
-        for (int key : keys) {
-            if (key < splitKey) smallerAmount++;
-            if (key > splitKey) biggerAmount++;
-        }
-        BTreePrinter.printNode(tree.getRoot());
-        AVLTree[] splitParts = tree.split(splitKey);
+        if (keys.size() > 0) {
+            System.out.println("-testing split");
+            int splitKey = keys.get(random.nextInt(keys.size()));
+            int smallerAmount = 0, biggerAmount = 0;
+            for (int key : keys) {
+                if (key < splitKey) smallerAmount++;
+                if (key > splitKey) biggerAmount++;
+            }
+            //BTreePrinter.printNode(tree.getRoot());
+            AVLTree[] splitParts = tree.split(splitKey);
 
-        assert splitParts[0].size() == smallerAmount : "smaller tree wrong size";
-        assert splitParts[1].size() == biggerAmount : "bigger tree wrong size";
-        assertOnTree(splitParts[0], "on smaller tree when splitting by " + splitKey);
-        assertOnTree(splitParts[1], "on bigger tree when splitting by " + splitKey);
+            assert splitParts[0].size() == smallerAmount : "smaller tree wrong size when splitting by " + splitKey;
+            assert splitParts[1].size() == biggerAmount : "bigger tree wrong size when splitting by " + splitKey;
+            assertOnTree(splitParts[0], "on smaller tree when splitting by " + splitKey);
+            assertOnTree(splitParts[1], "on bigger tree when splitting by " + splitKey);
+        }
     }
 
     public static void main(String[] args) throws InterruptedException {
-        testRandomTree(20);
+        System.out.println("testing tree of size 0");
+        testRandomTree(0);
+        System.out.println("testing tree of size 1");
+        testRandomTree(1);
+        for (int i = 0; i < 100; i++) {
+            int size = new Random().nextInt(500);
+            System.out.println("testing tree of size " + size);
+            testRandomTree(size);
+        }
     }
 }
 

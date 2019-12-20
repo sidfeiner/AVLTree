@@ -357,18 +357,24 @@ public class AVLTree {
         if (node != this.root) {
             if (parent.getRight() == node) {
                 // this is a right child
+                IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
+                AVLTree leftTree;
                 if (parent.getLeft().isRealNode()) {
-                    IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
-                    AVLTree subTree = new AVLTree(parent.getLeft());
-                    complexities.add(smaller.join(copyNode, subTree));
+                    leftTree = new AVLTree(parent.getLeft());
+                } else {
+                    leftTree = new AVLTree();
                 }
+                complexities.add(smaller.join(copyNode, leftTree));
             } else if (parent.getLeft() == node) {
                 // this is a left child
+                IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, 1);
+                AVLTree rightTree;
                 if (parent.getRight().isRealNode()) {
-                    IAVLNode copyNode = new AVLNode(parent.getKey(), parent.getValue(), false, parent.getSize());
-                    AVLTree rightTree = new AVLTree(parent.getRight());
-                    complexities.add(bigger.join(copyNode, rightTree));
+                    rightTree = new AVLTree(parent.getRight());
+                } else {
+                    rightTree = new AVLTree();
                 }
+                complexities.add(bigger.join(copyNode, rightTree));
             }
             splitRecBottomUp(parent, smaller, bigger, complexities);
         }
@@ -394,6 +400,10 @@ public class AVLTree {
             if (node.getRight().isRealNode()) {
                 bigger = new AVLTree(node.getRight());
             }
+            smaller.updateMin();
+            smaller.updateMax();
+            bigger.updateMin();
+            bigger.updateMax();
             return new AVLTree[]{smaller, bigger};
         } else {
             // splitting node is not the root
@@ -453,6 +463,8 @@ public class AVLTree {
                         x.setLeft(virtualNode);
                         x.setRight(virtualNode);
                         x.setHeight(0);
+                        this.size = 1;
+                        x.setSize(1);
                         return 1;
                     }
                 }
@@ -485,7 +497,7 @@ public class AVLTree {
             } else {
                 this.root = t.getRoot();
                 parent.setLeft(x);
-                increaseAncestorsSize(x.getParent(),this.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(), x.getLeft().getSize() + 1);
                 rebalanceTree(x);
             }
         } else { //if t is of smaller rank
@@ -505,7 +517,7 @@ public class AVLTree {
                 this.root = x;
             } else {
                 parent.setRight(x);
-                increaseAncestorsSize(x.getParent(),t.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(), t.getRoot().getSize());
                 rebalanceTree(x);
             }
 
@@ -537,7 +549,7 @@ public class AVLTree {
             } else {
 
                 parent.setRight(x);
-                increaseAncestorsSize(x.getParent(),t.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(), t.getRoot().getSize());
                 rebalanceTree(x);
             }
         } else { //if t is of larger rank
@@ -558,7 +570,7 @@ public class AVLTree {
             } else {
                 this.root = t.getRoot();
                 parent.setLeft(x);
-                increaseAncestorsSize(x.getParent(),this.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(), this.getRoot().getSize());
                 rebalanceTree(x);
             }
         }
@@ -587,7 +599,8 @@ public class AVLTree {
             this.root = x;
             x.setParent(null);
         }
-        x.setSize(x.getLeft().getSize() + x.getRight().getSize()+1);
+        x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+        x.setSize(x.getLeft().getSize() + x.getRight().getSize() + 1);
         return 1;
     }
 
@@ -826,10 +839,10 @@ public class AVLTree {
         node2.setKey(node1key);
         node2.setValue(node1value);
         node2.setSize(node1Size);
-        if(node1 == minNode){
+        if (node1 == minNode) {
             minNode = node2;
         }
-        if(node2 == maxNode){
+        if (node2 == maxNode) {
             maxNode = node1;
         }
 
