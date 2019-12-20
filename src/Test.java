@@ -1,5 +1,3 @@
-import javafx.scene.control.TableRow;
-
 import java.util.*;
 import java.util.List;
 import java.util.Random;
@@ -17,17 +15,14 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
-        Random rand = new Random();
-        int [] keys = {0,2,4,6,1,7,3,8,9,5};
         int size = 0;
-        for (int k:keys) {
-            tree.insert(k, Integer.toString(k));
+        for (int i = 1; i <= 5; i++) {
+            tree.insert(i, Integer.toString(i));
         }
 
-            tree.delete(6);
-            BTreePrinter.printNode(tree.getRoot(),"size");
-            assertOnTree(tree,"");
+        BTreePrinter.printNode(tree.getRoot(),"size");
 
+        AVLTree[] trees = tree.split(2);
 
     }
 
@@ -210,14 +205,13 @@ public class Test {
         //List<Integer> keys = IntStream.rangeClosed(0, size).boxed().collect(Collectors.toList());
         int[] keysArr = {7,2,4,0,5,6,3,8,1};
         List<Integer> keys = Arrays.stream(keysArr).boxed().collect(Collectors.toList());
-        Collections.shuffle(keys);
+        //Collections.shuffle(keys);
         System.out.println("-testing inserts");
         for (int k : keys) {
             System.out.println("insert " + k);
             tree.insert(k, Integer.toString(k));
             assertOnTree(tree, "after inserting " + k);
         }
-        BTreePrinter.printNode(tree.getRoot());
         int randIndex;
         int k;
         Random random = new Random();
@@ -268,7 +262,7 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        testForDango();
+        testRandomTree(20);
     }
 }
 
