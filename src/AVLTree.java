@@ -176,9 +176,9 @@ public class AVLTree {
      */
     public int insert(int k, String i) {
         AVLNode node = new AVLNode(k, i);
-        AVLNode v1 = new AVLNode(-1,"V",true);
+        AVLNode v1 = new AVLNode(-1, "V", true);
         v1.setParent(node);
-        AVLNode v2 = new AVLNode(-1,"V",true);
+        AVLNode v2 = new AVLNode(-1, "V", true);
         v2.setParent(node);
         node.setRight(v1);
         node.setLeft(v2);
@@ -441,38 +441,42 @@ public class AVLTree {
      * postcondition: none
      */
     public int join(IAVLNode x, AVLTree t) {
-        if (t.getRoot() != null && this.getRoot() != null) { //both tress are not null
+        if (t.getRoot() != null && this.getRoot() != null) {
+            //both tress are not null
+            //both tress have equal height
+            if (t.getRoot().getHeight() == this.getRoot().getHeight()) {
+                return (joinTreeWithEqualHeight(x, t));
+            }
+            //x and t have bigger keys
             if (x.getKey() > this.getRoot().getKey()) { // x and t are of bigger keys
                 return (joinBiggerKeyTree(x, t));
-            } else {
-                if (x.getKey() > this.getRoot().getKey()) {
-                    return (joinSmallerKeyTree(x, t));
-                } else { // equal height
-                    return (joinTreeWithEqualHeight(x, t));
-                }
             }
-        } else {
+            //x and tt have smaller keys
+            return (joinSmallerKeyTree(x, t));
+        } else { // one of trees are null
 
-            {
+            {   //this tree is null - regular insert
                 if (this.getRoot() == null && t.getRoot() != null) {
                     t.insert(x.getKey(), x.getValue());
                     this.root = t.getRoot();
                     this.size = t.size();
                     return t.getRoot().getHeight() + 1;
-                } else {
+                } else { //t is null - regular insert
                     if (this.getRoot() != null && t.getRoot() == null) {
                         this.insert(x.getKey(), x.getValue());
                         return this.getRoot().getHeight() + 1;
-                    } else {
-                        IAVLNode v1 = new AVLNode(-1,"V",true);
+                    } else { // both are null
+                        IAVLNode v1 = new AVLNode(-1, "V", true);
                         v1.setParent(x);
-                        IAVLNode v2 = new AVLNode(-1,"V",true);
+                        IAVLNode v2 = new AVLNode(-1, "V", true);
                         v2.setParent(x);
                         this.root = x;
                         x.setLeft(v1);
                         x.setRight(v2);
                         x.setHeight(0);
                         this.size = 1;
+                        this.minNode = x;
+                        this.maxNode = x;
                         x.setSize(1);
                         return 1;
                     }
@@ -526,7 +530,7 @@ public class AVLTree {
                 this.root = x;
             } else {
                 parent.setRight(x);
-                increaseAncestorsSize(x.getParent(), x.getRight().getSize()+1);
+                increaseAncestorsSize(x.getParent(), x.getRight().getSize() + 1);
                 rebalanceTree(x);
             }
 
@@ -552,12 +556,12 @@ public class AVLTree {
             IAVLNode parent = joinNode.getParent();
             joinNode.setParent(x);
             x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
-            x.setSize(this.getRoot().getSize() + joinNode.getSize() + 1);
+            x.setSize(t.getRoot().getSize() + joinNode.getSize() + 1);
             if (joinNode == this.getRoot()) {
                 this.root = x;
             } else {
-                parent.setRight(x);
-                increaseAncestorsSize(x.getParent(), x.getLeft().getSize()+1);
+                parent.setLeft(x);
+                increaseAncestorsSize(x.getParent(), x.getLeft().getSize() + 1);
                 rebalanceTree(x);
             }
         } else { //if t is of larger rank
@@ -565,20 +569,20 @@ public class AVLTree {
             while (joinNode.getHeight() > this.getRoot().getHeight()) {
                 joinNode = joinNode.getRight();
             }
-            x.setRight(t.getRoot());
+            x.setRight(this.getRoot());
             x.setLeft(joinNode);
             x.setParent(joinNode.getParent());
-            t.getRoot().setParent(x);
+            this.getRoot().setParent(x);
             IAVLNode parent = joinNode.getParent();
             joinNode.setParent(x);
             x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
-            x.setSize(t.getRoot().getSize() + joinNode.getSize() + 1);
+            x.setSize(this.getRoot().getSize() + joinNode.getSize() + 1);
             if (joinNode == t.getRoot()) {
                 this.root = x;
             } else {
                 this.root = t.getRoot();
-                parent.setLeft(x);
-                increaseAncestorsSize(x.getParent(), x.getRight().getSize()+1);
+                parent.setRight(x);
+                increaseAncestorsSize(x.getParent(), x.getRight().getSize() + 1);
                 rebalanceTree(x);
             }
         }

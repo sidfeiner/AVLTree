@@ -16,7 +16,7 @@ public class Test {
         AVLTree tree = new AVLTree();
         AVLTree[] afterSplit ;
         Random rand = new Random();
-        int[] keys = {7,1,3,10,4,2,8,6,9,5};
+        int[] keys = {4,7,5,8,3,2,6,10,1,9};
         int size = 0;
         for (int k : keys) {
             tree.insert(k, Integer.toString(k));
@@ -24,13 +24,13 @@ public class Test {
         }
 
         BTreePrinter.printNode(tree.getRoot());
-        tree.delete(3);
+        tree.delete(2);
         BTreePrinter.printNode(tree.getRoot(), "key");
         assertOnTree(tree, "");
 
         afterSplit = tree.split(1);
-        BTreePrinter.printNode(afterSplit[1].getRoot(), "key");
-        BTreePrinter.printNode(afterSplit[1].getRoot(), "size");
+        BTreePrinter.printNode(afterSplit[0].getRoot(), "key");
+        BTreePrinter.printNode(afterSplit[0].getRoot(), "size");
         assertOnTree(afterSplit[0], "");
         assertOnTree(afterSplit[1], "");
 
@@ -285,16 +285,18 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        testForDango();
         System.out.println("testing tree of size 0");
         testRandomTree(0);
         System.out.println("testing tree of size 1");
         testRandomTree(1);
         Random rand = new Random();
         for (int i = 0; i < 100; i++) {
-            int size = rand.nextInt(500);
+            int size =rand.nextInt(500);
             System.out.println("testing tree of size " + size);
             testRandomTree(size);
         }
+
 
     }
 }
