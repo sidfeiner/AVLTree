@@ -240,9 +240,10 @@ public class AVLTree {
             return (rebalanceAfterDelete(parent));
         } //deletes if node is unary node
         IAVLNode nodeToDelete = swapNodeWithSuccessor(node);
+        parent = nodeToDelete.getParent();
         deleteAfterSuccessorSwap(nodeToDelete); // swaps regular node with successor then deletes
         decrementAncestorsSize(parent);
-        int rebalanceOpsAmount = rebalanceAfterDelete(nodeToDelete.getParent());
+        int rebalanceOpsAmount = rebalanceAfterDelete(parent);
         return rebalanceOpsAmount;
     }
 
@@ -518,9 +519,9 @@ public class AVLTree {
         this.minNode = t.minNode;
         this.size = this.size + t.size() + 1;
         int cost = Math.abs(this.getRoot().getHeight() - t.getRoot().getHeight()) + 1;
-        if (t.getRoot().getHeight() < this.getRoot().getHeight()) { //if t is of larger rank
+        if (t.getRoot().getHeight() < this.getRoot().getHeight()) { //if t is of smaller rank
             IAVLNode joinNode = this.getRoot();
-            while (joinNode.getHeight() >= this.root.getHeight()) {
+            while (joinNode.getHeight() >= t.getRoot().getHeight()) {
                 joinNode = joinNode.getLeft();
             }
             x.setRight(joinNode);
@@ -534,14 +535,14 @@ public class AVLTree {
             if (joinNode == this.getRoot()) {
                 this.root = x;
             } else {
-                this.root = t.getRoot();
+
                 parent.setRight(x);
-                increaseAncestorsSize(x.getParent(),this.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(),t.getRoot().getSize());
                 rebalanceTree(x);
             }
-        } else { //if t is of smaller rank
+        } else { //if t is of larger rank
             IAVLNode joinNode = t.getRoot();
-            while (joinNode.getHeight() > t.getRoot().getHeight()) {
+            while (joinNode.getHeight() > this.getRoot().getHeight()) {
                 joinNode = joinNode.getRight();
             }
             x.setRight(t.getRoot());
@@ -555,8 +556,9 @@ public class AVLTree {
             if (joinNode == t.getRoot()) {
                 this.root = x;
             } else {
+                this.root = t.getRoot();
                 parent.setLeft(x);
-                increaseAncestorsSize(x.getParent(),t.getRoot().getSize());
+                increaseAncestorsSize(x.getParent(),this.getRoot().getSize());
                 rebalanceTree(x);
             }
         }

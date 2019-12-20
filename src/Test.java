@@ -1,3 +1,5 @@
+import javafx.scene.control.TableRow;
+
 import java.util.*;
 import java.util.List;
 import java.util.Random;
@@ -15,13 +17,17 @@ public class Test {
 
     public static void testForDango() throws InterruptedException {
         AVLTree tree = new AVLTree();
+        Random rand = new Random();
+        int [] keys = {0,2,4,6,1,7,3,8,9,5};
         int size = 0;
-        for (int i = 1; i <= 7; i++) {
-            tree.insert(i, Integer.toString(i));
+        for (int k:keys) {
+            tree.insert(k, Integer.toString(k));
         }
 
-        BTreePrinter.printNode(tree.getRoot());
-        AVLTree[] trees = tree.split(2);
+            tree.delete(6);
+            BTreePrinter.printNode(tree.getRoot(),"size");
+            assertOnTree(tree,"");
+
 
     }
 
@@ -204,17 +210,18 @@ public class Test {
         //List<Integer> keys = IntStream.rangeClosed(0, size).boxed().collect(Collectors.toList());
         int[] keysArr = {7,2,4,0,5,6,3,8,1};
         List<Integer> keys = Arrays.stream(keysArr).boxed().collect(Collectors.toList());
-        //Collections.shuffle(keys);
+        Collections.shuffle(keys);
         System.out.println("-testing inserts");
         for (int k : keys) {
             System.out.println("insert " + k);
             tree.insert(k, Integer.toString(k));
             assertOnTree(tree, "after inserting " + k);
         }
+        BTreePrinter.printNode(tree.getRoot());
         int randIndex;
         int k;
         Random random = new Random();
-        /*System.out.println("-testing deletes");
+        System.out.println("-testing deletes");
         for (int i = 0; i < Math.ceil(size / 10.0); i++) {
             randIndex = random.nextInt(keys.size());
             k = keys.remove(randIndex);
@@ -242,7 +249,7 @@ public class Test {
         for (int dk : deletedKeys) {
             tree.insert(dk, Integer.toString(dk));
             keys.add(dk);
-        }*/
+        }
 
         System.out.println("-testing split");
         int splitKey = 0;//keys.get(random.nextInt(keys.size()));
@@ -261,15 +268,7 @@ public class Test {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("testing tree of size 0");
-        testRandomTree(0);
-        System.out.println("testing tree of size 1");
-        testRandomTree(1);
-        for (int i = 0; i < 100; i++) {
-            int size = new Random().nextInt(20);
-            System.out.println("testing tree of size " + size);
-            testRandomTree(size);
-        }
+        testForDango();
     }
 }
 
