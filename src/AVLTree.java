@@ -827,10 +827,10 @@ public class AVLTree {
         node2.setValue(node1value);
         node2.setSize(node1Size);
         if(node1 == minNode){
-            node2 = minNode;
+            minNode = node2;
         }
         if(node2 == maxNode){
-            node1 = maxNode;
+            maxNode = node1;
         }
 
     }
