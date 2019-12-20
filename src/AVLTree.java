@@ -484,6 +484,7 @@ public class AVLTree {
             } else {
                 this.root = t.getRoot();
                 parent.setLeft(x);
+                increaseAncestorsSize(x.getParent(),this.getRoot().getSize());
                 rebalanceTree(x);
             }
         } else { //if t is of smaller rank
@@ -503,6 +504,7 @@ public class AVLTree {
                 this.root = x;
             } else {
                 parent.setRight(x);
+                increaseAncestorsSize(x.getParent(),t.getRoot().getSize());
                 rebalanceTree(x);
             }
 
@@ -516,7 +518,7 @@ public class AVLTree {
         this.minNode = t.minNode;
         this.size = this.size + t.size() + 1;
         int cost = Math.abs(this.getRoot().getHeight() - t.getRoot().getHeight()) + 1;
-        if (t.getRoot().getHeight() > this.getRoot().getHeight()) { //if t is of larger rank
+        if (t.getRoot().getHeight() < this.getRoot().getHeight()) { //if t is of larger rank
             IAVLNode joinNode = this.getRoot();
             while (joinNode.getHeight() >= this.root.getHeight()) {
                 joinNode = joinNode.getLeft();
@@ -534,6 +536,7 @@ public class AVLTree {
             } else {
                 this.root = t.getRoot();
                 parent.setRight(x);
+                increaseAncestorsSize(x.getParent(),this.getRoot().getSize());
                 rebalanceTree(x);
             }
         } else { //if t is of smaller rank
@@ -553,6 +556,7 @@ public class AVLTree {
                 this.root = x;
             } else {
                 parent.setLeft(x);
+                increaseAncestorsSize(x.getParent(),t.getRoot().getSize());
                 rebalanceTree(x);
             }
         }
@@ -581,8 +585,7 @@ public class AVLTree {
             this.root = x;
             x.setParent(null);
         }
-        x.setSize(x.getLeft().getSize() + x.getRight().getSize());
-
+        x.setSize(x.getLeft().getSize() + x.getRight().getSize()+1);
         return 1;
     }
 

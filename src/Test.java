@@ -251,7 +251,9 @@ public class Test {
             if (key < splitKey) smallerAmount++;
             if (key > splitKey) biggerAmount++;
         }
+        BTreePrinter.printNode(tree.getRoot());
         AVLTree[] splitParts = tree.split(splitKey);
+
         assert splitParts[0].size() == smallerAmount : "smaller tree wrong size";
         assert splitParts[1].size() == biggerAmount : "bigger tree wrong size";
         assertOnTree(splitParts[0], "on smaller tree when splitting by " + splitKey);
